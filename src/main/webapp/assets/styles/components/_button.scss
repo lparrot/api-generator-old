@@ -1,0 +1,10 @@
+.p-btn {
+  @apply rounded py-2 px-3;
+}
+
+@each $color in $colors {
+  .p-btn--#{$color} {
+    @extend .p-btn;
+    @apply bg-#{$color} hover:bg-#{$color}-600 text-white duration-300;
+  }
+}

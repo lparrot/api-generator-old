@@ -1,0 +1,32 @@
+@tailwind components;
+@tailwind base;
+@tailwind utilities;
+
+$colors: primary, secondary, success, info, warn, danger;
+
+html, body, #__nuxt, #__layout {
+  @apply text-gray-700 text-sm h-full;
+}
+
+@layer components {
+
+  @import "components/animation";
+  @import 'components/button';
+
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2D3748;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}

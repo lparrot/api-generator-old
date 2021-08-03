@@ -49,10 +49,16 @@
       <template #title>{{ fieldEdit.id == null ? 'Add new field' : `Edit field ${ content.name } / ${ fieldEdit.name }` }}</template>
 
       <form id="formEditField" @submit.prevent="submit">
-        <fieldset class="form-field required">
-          <label for="input-field-name">Name</label>
-          <input id="input-field-name" v-model="fieldEdit.name" class="form-input" name="name" required>
-        </fieldset>
+        <div class="grid grid-cols-2 space-x-2">
+          <fieldset class="form-field required">
+            <label for="input-field-name">Name</label>
+            <input id="input-field-name" v-model="fieldEdit.name" class="form-input" name="name" required>
+          </fieldset>
+          <fieldset class="form-field required">
+            <label for="input-field-type">Type</label>
+            <dropdown id="input-field-type"></dropdown>
+          </fieldset>
+        </div>
       </form>
     </modal>
   </div>
@@ -61,12 +67,13 @@
 <script lang="ts">
 import { Component, Ref, Vue } from 'nuxt-property-decorator'
 import Modal from '~/components/shared/Modal.vue'
+import Dropdown from '~/components/shared/Dropdown.vue'
 
 declare type EditMode = 'add' | 'edit'
 
 @Component({
   components: {
-    Modal,
+    Modal, Dropdown,
   },
 })
 export default class PageContentTypes extends Vue {

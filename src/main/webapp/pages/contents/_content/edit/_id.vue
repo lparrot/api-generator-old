@@ -7,56 +7,56 @@
         <template v-if="field.type.code === 'STRING'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
 
         <template v-if="field.type.code === 'TEXT'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
 
         <template v-if="field.type.code === 'RICHTEXT'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
 
         <template v-if="field.type.code === 'UID'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
 
         <template v-if="field.type.code === 'DATE'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
 
         <template v-if="field.type.code === 'TIME'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
 
         <template v-if="field.type.code === 'DATETIME'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
 
         <template v-if="field.type.code === 'RELATION'">
           <label>
             <span>{{ field.name }}</span>
-            <input v-model="contentData[field.dbFieldName]" :name="field.dbFieldName">
+            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
           </label>
         </template>
       </div>
@@ -74,7 +74,7 @@ declare type EditMode = 'add' | 'edit'
 @Component
 export default class PageIndex extends Vue {
   content: any = {}
-  contentData: any = {}
+  item: any = {}
 
   get fields () {
     return this.content.contentFields
@@ -82,19 +82,18 @@ export default class PageIndex extends Vue {
   }
 
   get mode (): EditMode {
-    return this.$route.params.idData != null ? 'edit' : 'add'
+    return this.$route.params.id != null ? 'edit' : 'add'
   }
 
   async fetch () {
-    const idContent = this.$route.params.idContent
-    this.content = await this.$axios.$get(`/contents/${ idContent }`)
+    this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
     if (this.mode === 'edit') {
-      this.contentData = await this.$axios.$get(`/${ this.content.slug }/${ this.$route.params.idData }`)
+      this.item = await this.$axios.$get(`/${ this.content.slug }/${ this.$route.params.id }`)
     }
   }
 
   async submit () {
-    await this.$axios.$post(`/${ this.content.slug }/v1`, this.contentData)
+    await this.$axios.$post(`/${ this.content.slug }/v1`, this.item)
   }
 }
 </script>

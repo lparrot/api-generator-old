@@ -3,7 +3,7 @@
     <h3 class="text-gray-700 text-3xl font-medium pb-4">Content of {{ content.name }} table</h3>
 
     <div class="my-4">
-      <router-link :to="`/contents/edit/${content.id}`" class="p-btn--primary">Add new {{ content.name }}</router-link>
+      <router-link :to="`/contents/${content.id}/edit`" class="p-btn--primary">Add new {{ content.name }}</router-link>
     </div>
 
     <table class="min-w-full table-auto">
@@ -23,7 +23,7 @@
             </div>
           </td>
           <td class="py-4">
-            <router-link :to="`/contents/edit/${content.id}/${item.id}`" class="p-btn--primary">Edit</router-link>
+            <router-link :to="{ path: `/contents/${content.id}/edit/${item.id}`}" class="p-btn--primary">Edit</router-link>
           </td>
         </tr>
       </tbody>
@@ -45,8 +45,7 @@ export default class PageContentIndex extends Vue {
   }
 
   async fetch () {
-    const idContent = this.$route.params.idContent
-    this.content = await this.$axios.$get(`/contents/${ idContent }`)
+    this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
     this.list = await this.$axios.$get(`/${ this.content.slug }`)
   }
 }

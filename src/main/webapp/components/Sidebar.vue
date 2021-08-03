@@ -17,7 +17,7 @@
       </div>
 
       <nav class="mt-10">
-        <router-link v-for="(content, contentIndex) in contents" :key="contentIndex" #default="{href, route, navigate, isActive, isExactActive}" :to="`/contents/${content.id}`" exact>
+        <router-link v-for="(content, contentIndex) in contents" :key="contentIndex" #default="{href, route, navigate, isActive, isExactActive}" :to="`/contents/${content.id}`" custom exact>
           <a :class="[isExactActive ? activeClass : inactiveClass]" :href="href" class="flex items-center px-6 py-2 mt-2 duration-200 border-l-4" @click="navigate">
             <i class="fas fa-home fa-1x"></i>
             <span class="mx-4">{{ content.name }}</span>

@@ -6,35 +6,31 @@
       <router-link :to="`/contents/${content.id}/edit`" class="p-btn--primary">Add new {{ content.name }}</router-link>
     </div>
 
-    <table class="min-w-full table-auto">
-      <thead class="justify-between">
-        <tr class="bg-gray-800">
-          <th v-for="(field, fieldIndex) in fields" :key="fieldIndex" class="px-16 py-2">
-            <span class="text-gray-300">{{ field.name }}</span>
-          </th>
-          <th class="px-16 py-2"></th>
-        </tr>
-      </thead>
-      <tbody class="bg-gray-200">
-        <tr v-for="(item, itemIndex) in list" :key="itemIndex" class="bg-white border-4 border-gray-200 py-4">
-          <td v-for="(field, fieldIndex) in fields" :key="itemIndex + fieldIndex">
-            <div class="text-center ml-2 font-semibold">
-              {{ item[field.dbFieldName] }}
-            </div>
-          </td>
-          <td class="py-4">
-            <router-link :to="{ path: `/contents/${content.id}/edit/${item.id}`}" class="p-btn--primary">Edit</router-link>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <datatable :fields="fieldForDatatable" :items="list" with-actions>
+      <template #cell(actions)="{item}">
+        <div class="flex">
+          <router-link :to="`/contents/${content.id}/edit/${item.id}`" class="p-btn--primary block rounded-full px-2 py-1.5 mx-1" @>
+            <i class="fas fa-pencil-alt"></i>
+          </router-link>
+          <button class="p-btn--danger block rounded-full px-2 py-1.5 mx-1">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </template>
+    </datatable>
+
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
+import Datatable from '~/components/shared/Datatable.vue'
 
-@Component
+@Component({
+  components: {
+    Datatable,
+  },
+})
 export default class PageContentIndex extends Vue {
   content: any = {}
   list: any[] = []
@@ -42,6 +38,12 @@ export default class PageContentIndex extends Vue {
   get fields () {
     return this.content.contentFields
       .filter(field => !field.hideInList)
+  }
+
+  get fieldForDatatable () {
+    return this.content.contentFields.filter(field => !field.hideInList).map(field => {
+      return { key: field.dbFieldName, label: field.name }
+    })
   }
 
   async fetch () {

@@ -21,7 +21,7 @@
         <template v-if="field.type.code === 'TEXT'">
           <div :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
-            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+            <textarea :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" rows="6"></textarea>
           </div>
         </template>
 
@@ -33,30 +33,37 @@
         </template>
 
         <template v-if="field.type.code === 'UID'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <div :class="{required: !field.nullable}" class="form-field w-full">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
-            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+            <div class="flex flex-wrap items-stretch w-full">
+              <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input flex-shrink flex-grow flex-auto border-r-0 rounded-r-none">
+              <div class="flex -mr-px">
+                <button class="p-btn--primary rounded-l-none" type="button" @click="$set(item, field.dbFieldName, $utils.generateUUID())">
+                  <i class="fas fa-sync"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </template>
 
         <template v-if="field.type.code === 'DATE'">
           <div :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
-            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="date">
           </div>
         </template>
 
         <template v-if="field.type.code === 'TIME'">
           <div :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
-            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="time">
           </div>
         </template>
 
         <template v-if="field.type.code === 'DATETIME'">
           <div :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
-            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="datetime-local">
           </div>
         </template>
 
@@ -100,7 +107,17 @@ export default class PageIndex extends Vue {
   }
 
   async submit () {
-    await this.$axios.$post(`/${ this.content.slug }`, this.item)
+    switch (this.mode) {
+      case 'add':
+        await this.$axios.$post(`/${ this.content.slug }`, this.item)
+        break
+      case 'edit':
+        await this.$axios.$put(`/${ this.content.slug }/${ this.item.id }`, this.item)
+        break
+      default:
+        break
+    }
+    await this.$router.push(`/contents/${ this.content.id }`)
   }
 }
 </script>

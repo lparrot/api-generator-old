@@ -1,24 +1,32 @@
 <template>
-  <div class="flex h-screen bg-gray-200 font-roboto">
-    <Sidebar :contents="contents"/>
-
-    <div class="flex-1 flex flex-col overflow-hidden">
-      <Header/>
-
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200">
-        <div class="mx-auto px-6 py-8">
-          <nuxt/>
-        </div>
-      </main>
+  <section class="min-h-screen bg-gray-50">
+    <app-sidebar :contents="contents"/>
+    <div class="ml-0 transition md:ml-60">
+      <app-header/>
+      <div class="p-4">
+        <nuxt/>
+      </div>
     </div>
-  </div>
+
+    <!-- Sidebar Backdrop -->
+    <div v-show="sidebar" class="fixed inset-0 z-10 w-screen h-screen bg-black bg-opacity-25 md:hidden" @click="updateSidebar(false)"></div>
+  </section>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Action, Component, State, Vue } from 'nuxt-property-decorator'
+import AppSidebar from '~/components/app/AppSidebar.vue'
+import AppHeader from '~/components/app/AppHeader.vue'
 
-@Component
+@Component({
+  componnents: {
+    AppSidebar, AppHeader,
+  },
+})
 export default class LayoutDefault extends Vue {
+  @State('sidebar') sidebar: boolean
+  @Action('updateSidebar') updateSidebar
+
   contents: any[] = []
 
   async fetch () {

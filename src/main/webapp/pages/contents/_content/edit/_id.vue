@@ -5,63 +5,70 @@
     <form @submit.prevent="submit">
       <div v-for="(field, fieldIndex) in fields" :key="fieldIndex">
         <template v-if="field.type.code === 'STRING'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
+        </template>
+
+        <template v-if="field.type.code === 'NUMBER'">
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="number">
+          </div>
         </template>
 
         <template v-if="field.type.code === 'TEXT'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
         </template>
 
         <template v-if="field.type.code === 'RICHTEXT'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
         </template>
 
         <template v-if="field.type.code === 'UID'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
         </template>
 
         <template v-if="field.type.code === 'DATE'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
         </template>
 
         <template v-if="field.type.code === 'TIME'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
         </template>
 
         <template v-if="field.type.code === 'DATETIME'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
         </template>
 
         <template v-if="field.type.code === 'RELATION'">
-          <label>
-            <span>{{ field.name }}</span>
-            <input v-model="item[field.dbFieldName]" :name="field.dbFieldName">
-          </label>
+          <div :class="{required: !field.nullable}" class="form-field">
+            <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
+            <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
+          </div>
         </template>
       </div>
 
-      <button class="p-btn--success" type="submit">{{ mode === 'add' ? 'Create' : 'Update' }}</button>
+      <button class="p-btn--success mt-2" type="submit">{{ mode === 'add' ? 'Create' : 'Update' }}</button>
     </form>
   </div>
 </template>
@@ -93,7 +100,7 @@ export default class PageIndex extends Vue {
   }
 
   async submit () {
-    await this.$axios.$post(`/${ this.content.slug }/v1`, this.item)
+    await this.$axios.$post(`/${ this.content.slug }`, this.item)
   }
 }
 </script>

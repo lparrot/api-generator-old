@@ -8,25 +8,7 @@ html, body, #__nuxt, #__layout {
   @apply text-gray-700 text-sm h-full;
 }
 
-@layer components {
-
-  @import "components/animation";
-  @import 'components/button';
-
-}
-
-::-webkit-scrollbar {
-  width: 7px;
-}
-
-::-webkit-scrollbar-track {
-  background: #2D3748;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #CBD5E0;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #718096;
-}
+@import "components/animation";
+@import 'components/button';
+@import 'components/form';
+@import 'components/scrollbar';

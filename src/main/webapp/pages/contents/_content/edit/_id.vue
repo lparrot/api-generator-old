@@ -5,35 +5,35 @@
     <form @submit.prevent="submit">
       <div v-for="(field, fieldIndex) in fields" :key="fieldIndex">
         <template v-if="field.type.code === 'STRING'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'NUMBER'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="number">
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'TEXT'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <textarea :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" rows="6"></textarea>
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'RICHTEXT'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'UID'">
-          <div :class="{required: !field.nullable}" class="form-field w-full">
+          <fieldset :class="{required: !field.nullable}" class="form-field w-full">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <div class="flex flex-wrap items-stretch w-full">
               <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input flex-shrink flex-grow flex-auto border-r-0 rounded-r-none">
@@ -43,35 +43,35 @@
                 </button>
               </div>
             </div>
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'DATE'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="date">
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'TIME'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="time">
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'DATETIME'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input" type="datetime-local">
-          </div>
+          </fieldset>
         </template>
 
         <template v-if="field.type.code === 'RELATION'">
-          <div :class="{required: !field.nullable}" class="form-field">
+          <fieldset :class="{required: !field.nullable}" class="form-field">
             <label :for="`input-` + field.dbFieldName">{{ field.name }}</label>
             <input :id="`input-` + field.dbFieldName" v-model="item[field.dbFieldName]" :name="field.dbFieldName" :required="!field.nullable" class="form-input">
-          </div>
+          </fieldset>
         </template>
       </div>
 

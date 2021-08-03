@@ -4,6 +4,7 @@
 
     <div class="my-4">
       <router-link :to="`/contents/${content.id}/edit`" class="p-btn--primary">Add new {{ content.name }}</router-link>
+      <router-link :to="`/content-types/${content.id}`" class="p-btn--success ml-2">Edit content structure</router-link>
     </div>
 
     <datatable :fields="fieldForDatatable" :items="list" with-actions>

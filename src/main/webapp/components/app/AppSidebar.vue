@@ -6,6 +6,10 @@
         API Generator
       </nuxt-link>
 
+      <div class="flex items-center px-4 py-2">
+        <nuxt-link :to="`/content-types`" class="p-btn--success w-full">Add content</nuxt-link>
+      </div>
+
       <app-sidebar-collapse :items="sidebarItems" :open="true" icon="fas fa-cube" label="Collections"></app-sidebar-collapse>
 
     </nav>

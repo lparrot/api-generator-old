@@ -65,6 +65,23 @@ public class ContentService {
 	}
 
 	@Transactional
+	public ContentSimpleDTO updateContent(Long id, ContentVM body) {
+		Content content = contentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+		String oldTableName = content.getTableName();
+
+		contentMapper.updateEntityFromVm(body, content);
+
+		if (!oldTableName.equals(content.getTableName())) {
+			jdbcService.updateTable(oldTableName, content.getTableName());
+		}
+
+		content = contentRepository.save(content);
+
+		return contentMapper.entityToDto(content);
+	}
+
+	@Transactional
 	public void deleteContent(Long id) {
 		Content content = contentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 

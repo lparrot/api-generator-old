@@ -22,7 +22,7 @@ public class ContentController {
 		return contentService.getContents();
 	}
 
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	public ContentSimpleDTO getContentById(@PathVariable Long id) {
 		return contentService.getContentById(id);
 	}
@@ -30,6 +30,11 @@ public class ContentController {
 	@PostMapping
 	public ContentSimpleDTO createContent(@RequestBody ContentVM body) {
 		return this.contentService.createContent(body);
+	}
+
+	@PutMapping("/{id}")
+	public ContentSimpleDTO updateContent(@PathVariable Long id, @RequestBody ContentVM body) {
+		return this.contentService.updateContent(id, body);
 	}
 
 	@DeleteMapping("/{id}")

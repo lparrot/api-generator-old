@@ -50,22 +50,14 @@ export default class Dropdown extends Vue {
 
   toggle () {
     this.dropdownOpen = !this.dropdownOpen
-    if (this.dropdownOpen) {
-      this.focusFirstItem()
-    }
   }
 
   open () {
     this.dropdownOpen = true
-    this.focusFirstItem()
   }
 
   close () {
     this.dropdownOpen = false
-  }
-
-  focusFirstItem () {
-    this.$nextTick(() => this.$el.querySelector('#dropdown-item-0').focus())
   }
 
   onSelect (item, itemIndex) {

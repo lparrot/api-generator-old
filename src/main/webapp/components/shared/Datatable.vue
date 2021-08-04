@@ -53,6 +53,7 @@ export interface DatatableClasses {
 export interface DatatableField {
   key: string
   label?: string
+  class?: string | string[]
 }
 
 @Component

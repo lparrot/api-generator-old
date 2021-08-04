@@ -54,8 +54,6 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 			contentComment.addField(ContentField.builder().name("Author").contentType(EnumContentFieldType.RELATION).build());
 			contentComment.addField(ContentField.builder().name("Blog").contentType(EnumContentFieldType.RELATION).build());
 
-//			contentRepository.saveAll(Arrays.asList(contentUser, contentBlog, contentComment));
-
 			contentService.createContent(contentUser);
 			contentService.createContent(contentBlog);
 			contentService.createContent(contentComment);

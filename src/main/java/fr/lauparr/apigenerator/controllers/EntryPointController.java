@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import fr.lauparr.apigenerator.services.EntryPointService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,9 @@ public class EntryPointController {
 	private EntryPointService entryPointService;
 
 	@GetMapping("/{*path}")
-	public ResponseEntity<JsonNode> entryGet(ServerHttpRequest request, @PathVariable String slug, @PathVariable String path) {
-		System.out.println("request = " + request + ", slug = " + slug + ", path = " + path);
-		return ResponseEntity.ok(JsonNodeFactory.instance.pojoNode(entryPointService.getData(slug)));
+	public ResponseEntity<JsonNode> entryGet(ServerHttpRequest request, @PathVariable String slug, @PathVariable String path, Pageable page) {
+		System.out.println("request = " + request + ", slug = " + slug + ", path = " + path + ", page = " + page);
+		return ResponseEntity.ok(JsonNodeFactory.instance.pojoNode(entryPointService.getData(slug, page)));
 	}
 
 	@GetMapping("/{id}/{*path}")

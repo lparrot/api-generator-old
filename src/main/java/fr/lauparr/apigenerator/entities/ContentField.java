@@ -1,6 +1,7 @@
 package fr.lauparr.apigenerator.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import static fr.lauparr.apigenerator.utils.StringUtils.toSnakeCase;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ContentField {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +44,6 @@ public class ContentField {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "content_id")
-	@JsonBackReference("content_content_field")
 	private Content content;
 
 	@Builder

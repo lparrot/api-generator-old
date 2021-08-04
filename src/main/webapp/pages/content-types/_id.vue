@@ -25,9 +25,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(field, fieldIndex) in content.contentFields" :key="fieldIndex" class="border-b">
+            <tr v-for="(field, fieldIndex) in fields" :key="fieldIndex" class="border-b hover:bg-primary-100">
               <td class="py-2 w-10">
-                <i :class="getIcon(field)"></i>
+                <i :class="getIcon(field.type)"></i>
               </td>
               <td>
                 {{ field.name }}
@@ -46,26 +46,50 @@
     </form>
 
     <modal ref="modalEditField" modal-class="w-2/3">
-      <template #title>{{ fieldEdit.id == null ? 'Add new field' : `Edit field ${ content.name } / ${ fieldEdit.name }` }}</template>
+      <template v-if="fieldEdit != null" #title>{{ fieldEdit.id == null ? 'Add new field' : `Edit field ${ content.name } / ${ fieldEdit.name }` }}</template>
 
-      <form id="formEditField" @submit.prevent="submit">
-        <div class="grid grid-cols-2 space-x-2">
+      <form v-if="fieldEdit != null" id="formEditField" @submit.prevent="submitField">
+        <div class="grid grid-cols-2 gap-2">
           <fieldset class="form-field required">
             <label for="input-field-name">Name</label>
             <input id="input-field-name" v-model="fieldEdit.name" class="form-input" name="name" required>
           </fieldset>
           <fieldset class="form-field required">
-            <label for="input-field-type">Type</label>
-            <dropdown id="input-field-type"></dropdown>
+            <label>Type</label>
+            <dropdown v-model="fieldEdit.type" :items="fieldTypes">
+              <template #default="{item}">
+                <i :class="getIcon(item)"></i>
+                <span class="ml-4">{{ item.name }}</span>
+              </template>
+
+              <template #content="{model}">{{ model && model.name }}</template>
+            </dropdown>
+          </fieldset>
+          <fieldset class="form-field flex items-center">
+            <div class="grid grid-cols-1 gap-1">
+              <label class="inline-flex items-center mt-3">
+                <input v-model="fieldEdit.hideInList" checked class="form-checkbox h-5 w-5 text-secondary-600" type="checkbox">
+                <span class="ml-2 label">Hide in list</span>
+              </label>
+              <label class="inline-flex items-center mt-3">
+                <input v-model="fieldEdit.nullable" checked class="form-checkbox h-5 w-5 text-secondary-600" type="checkbox">
+                <span class="ml-2 label">Nullable</span>
+              </label>
+            </div>
           </fieldset>
         </div>
       </form>
+
+      <template v-if="fieldEdit != null" #footer="{hide}">
+        <button class="p-btn--danger" type="button" @click="hide">Close</button>
+        <button class="p-btn--success" form="formEditField" type="submit">Save</button>
+      </template>
     </modal>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Ref, Vue } from 'nuxt-property-decorator'
+import { Action, Component, Ref, State, Vue } from 'nuxt-property-decorator'
 import Modal from '~/components/shared/Modal.vue'
 import Dropdown from '~/components/shared/Dropdown.vue'
 
@@ -79,11 +103,22 @@ declare type EditMode = 'add' | 'edit'
 export default class PageContentTypes extends Vue {
   @Ref('modalEditField') modalEditField: Modal
 
+  @State(state => state.lists.fieldtypes) fieldTypes
+  @Action('lists/getFieldTypes') getFieldTypes
+
   content: any = { contentFields: [] }
-  fieldEdit: any = {}
+  fieldEdit: any = null
 
   get mode (): EditMode {
     return this.$route.params.id != null ? 'edit' : 'add'
+  }
+
+  get modeField (): EditMode {
+    return this.fieldEdit.id != null ? 'edit' : 'add'
+  }
+
+  get fields () {
+    return this.content.contentFields.filter(field => !field.primaryKey)
   }
 
   async fetch () {
@@ -96,22 +131,40 @@ export default class PageContentTypes extends Vue {
     if (this.mode === 'edit') {
       await this.$axios.$post(`/contents`, this.content)
     } else {
-      await this.$axios.$put(`/contents/${ this.$route.params.id }`, this.content)
+      await this.$axios.$put(`/contents/${ this.content.id }`, this.content)
     }
   }
 
-  addField () {
-    this.fieldEdit = {}
+  async submitField () {
+    let field
+
+    this.fieldEdit.type = this.fieldEdit.type.code
+
+    if (this.modeField === 'edit') {
+      field = await this.$axios.$put(`/contents/${ this.content.id }/fields/${ this.fieldEdit.id }`, this.$utils.pickAttributes(this.fieldEdit, [ 'name', 'type', 'hideInList', 'nullable' ]))
+      this.$set(this.content.contentFields, this.content.contentFields.findIndex(field => field.dbFieldName === this.fieldEdit.dbFieldName), field)
+    } else {
+      field = await this.$axios.$post(`/contents/${ this.content.id }/fields`, this.fieldEdit)
+      this.content.contentFields.push(field)
+    }
+    this.fieldEdit = null
+    this.modalEditField.hide()
+  }
+
+  async addField () {
+    this.fieldEdit = { hideInList: false, nullable: true }
+    await this.getFieldTypes()
     this.modalEditField.show()
   }
 
-  editField (field) {
+  async editField (field) {
     this.fieldEdit = { ...field }
+    await this.getFieldTypes()
     this.modalEditField.show()
   }
 
-  getIcon (field) {
-    switch (field?.type?.code) {
+  getIcon (type) {
+    switch (type?.code) {
       case 'STRING':
         return 'fas fa-font'
       case 'TEXT':

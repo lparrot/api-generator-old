@@ -66,14 +66,16 @@ public class JdbcService {
 		return resultSet.next();
 	}
 
-	public boolean createTableIfNotExists(String tableName, ContentField primaryKeyField) {
-		final int updateCount = jdbcTemplate.update(String.format("create table if not exists %s (%s)", tableName, String.format("%s %s not null primary key", primaryKeyField.getDbFieldName(), primaryKeyField.getDatabaseTypeWithLength())));
-		return updateCount > 0;
+	public void createTableIfNotExists(String tableName, ContentField primaryKeyField) {
+		jdbcTemplate.update(String.format("create table if not exists %s (%s)", tableName, String.format("%s %s not null primary key", primaryKeyField.getDbFieldName(), primaryKeyField.getDatabaseTypeWithLength())));
 	}
 
-	public boolean createField(String tableName, String fieldName, String fieldType, boolean nullable) {
-		final int updateCount = jdbcTemplate.update(String.format("alter table %s add %s %s", tableName, fieldName, fieldType + (nullable ? "" : " not null")));
-		return updateCount > 0;
+	public void createField(String tableName, String fieldName, String fieldType, boolean nullable) {
+		jdbcTemplate.update(String.format("alter table %s add %s %s %s", tableName, fieldName, fieldType, nullable ? "" : " not null"));
+	}
+
+	public void updateField(String tableName, String oldFieldName, String newFieldName, String fieldType, boolean nullable) {
+		jdbcTemplate.update(String.format("alter table %s change column %s %s %s %s", tableName, oldFieldName, newFieldName, fieldType, nullable ? "" : " not null"));
 	}
 
 	public List<Object> findData(String tableName, String[] fieldNames) {

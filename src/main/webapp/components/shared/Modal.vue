@@ -1,7 +1,7 @@
 <template>
   <section v-if="d_opened">
     <div class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
-      <div class="relative w-5/6 w-auto my-6 mx-auto">
+      <div class="relative w-5/6 my-6 mx-auto">
         <!--content-->
         <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
           <!--header-->
@@ -18,8 +18,8 @@
             <slot></slot>
           </div>
           <!--footer-->
-          <div class="flex items-center justify-end p-3 border-t border-solid border-blueGray-200 rounded-b">
-            <slot name="footer">
+          <div class="flex items-center space-x-2 justify-end p-3 border-t border-solid border-blueGray-200 rounded-b">
+            <slot :hide="hide" name="footer">
               <button class="p-btn--danger" type="button" @click="toggle">
                 Close
               </button>

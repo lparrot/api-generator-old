@@ -6,6 +6,13 @@ export default async (ctx: Context, inject: Inject) => {
 }
 
 class Utils {
+  pickAttributes (obj: any, attributes: string[]) {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([ key ]) => attributes.includes(key)),
+    );
+  }
+
   generateUUID () {
     let d = new Date().getTime()//Timestamp
     let d2 = (performance && performance.now && (performance.now() * 1000)) || 0//Time in microseconds since page-load or 0 if unsupported

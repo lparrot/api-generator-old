@@ -19,7 +19,7 @@ import AppSidebar from '~/components/app/AppSidebar.vue'
 import AppHeader from '~/components/app/AppHeader.vue'
 
 @Component({
-  componnents: {
+  components: {
     AppSidebar, AppHeader,
   },
 })

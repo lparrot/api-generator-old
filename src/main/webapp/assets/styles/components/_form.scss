@@ -1,7 +1,7 @@
 .form-field {
   @apply grid grid-cols-1 space-y-2 my-2;
 
-  & > label {
+  & > label, & .label {
     @apply text-sm font-bold text-gray-500 tracking-wide;
   }
 
@@ -12,5 +12,5 @@
 }
 
 .form-input {
-  @apply py-2 px-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500;
+  @apply h-10 px-2 border border-gray-300 rounded-lg focus:outline-none focus:border-secondary-500;
 }

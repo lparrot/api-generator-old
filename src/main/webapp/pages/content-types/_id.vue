@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="text-gray-700 text-3xl font-medium">{{ mode === 'add' ? 'Add new' : 'Edit' }} {{ content.name }} structure</h3>
+    <h3 class="text-gray-700 text-3xl font-medium">{{ mode === 'add' ? 'Add new' : 'Edit ' + content.name }} structure</h3>
 
     <form @submit.prevent="submit">
       <fieldset class="form-field required">
@@ -8,6 +8,10 @@
         <input id="input-name" v-model="content.name" class="form-input" name="name" required>
       </fieldset>
 
+      <button class="p-btn--success" type="submit">Save data</button>
+    </form>
+
+    <template v-if="mode === 'edit'">
       <div class="py-3">
         <hr>
       </div>
@@ -43,7 +47,7 @@
 
         <button class="p-btn--success w-full mt-5" type="button" @click="addField">Add another field</button>
       </fieldset>
-    </form>
+    </template>
 
     <modal ref="modalEditField" modal-class="w-2/3">
       <template v-if="fieldEdit != null" #title>{{ fieldEdit.id == null ? 'Add new field' : `Edit field ${ content.name } / ${ fieldEdit.name }` }}</template>
@@ -105,6 +109,7 @@ export default class PageContentTypes extends Vue {
 
   @State(state => state.lists.fieldtypes) fieldTypes
   @Action('lists/getFieldTypes') getFieldTypes
+  @Action('findContents') findContents
 
   content: any = { contentFields: [] }
   fieldEdit: any = null
@@ -129,10 +134,12 @@ export default class PageContentTypes extends Vue {
 
   async submit () {
     if (this.mode === 'edit') {
-      await this.$axios.$post(`/contents`, this.content)
+      this.content = await this.$axios.$put(`/contents/${ this.content.id }`, this.content)
     } else {
-      await this.$axios.$put(`/contents/${ this.content.id }`, this.content)
+      const content = await this.$axios.$post(`/contents`, this.content)
+      await this.$router.push(`/content-types/${ content.id }`)
     }
+    await this.findContents()
   }
 
   async submitField () {

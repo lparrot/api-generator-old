@@ -5,6 +5,7 @@
     <div class="my-4">
       <router-link :to="`/contents/${content.id}/edit`" class="p-btn--primary">Add new {{ content.name }}</router-link>
       <router-link :to="`/content-types/${content.id}`" class="p-btn--success ml-2">Edit content structure</router-link>
+      <button class="p-btn--danger ml-2" @click="deleteContent">Delete content {{ content.name }}</button>
     </div>
 
     <datatable :fields="fieldForDatatable" :items="list" with-actions>
@@ -24,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Action, Component, Vue } from 'nuxt-property-decorator'
 import Datatable from '~/components/shared/Datatable.vue'
 
 @Component({
@@ -33,6 +34,8 @@ import Datatable from '~/components/shared/Datatable.vue'
   },
 })
 export default class PageContentIndex extends Vue {
+  @Action('findContents') findContents
+
   content: any = {}
   list: any[] = []
 
@@ -50,6 +53,12 @@ export default class PageContentIndex extends Vue {
   async fetch () {
     this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
     this.list = await this.$axios.$get(`/${ this.content.slug }`)
+  }
+
+  async deleteContent () {
+    await this.$axios.$delete(`/contents/${ this.content.id }`)
+    await this.$router.push(`/content-types`)
+    await this.findContents()
   }
 }
 </script>

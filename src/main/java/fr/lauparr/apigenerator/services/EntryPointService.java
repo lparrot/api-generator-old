@@ -16,29 +16,29 @@ public class EntryPointService {
 	@Autowired
 	private ContentRepository contentRepository;
 
-	public List<Object> getContent(String slug) {
+	public List<Object> getData(String slug) {
 		Content content = getContentBySlug(slug);
 		return jdbcService.findData(content.getTableName(), content.getFieldNames());
 	}
 
-	public Object getContentById(String slug, String id) {
+	public Object getDataById(String slug, String id) {
 		Content content = getContentBySlug(slug);
 		return jdbcService.findDataById(content.getTableName(), content.getFieldNames(), id);
 	}
 
-	public Object updateContent(String slug, String id, JsonNode body) {
+	public Object updateData(String slug, String id, JsonNode body) {
 		Content content = getContentBySlug(slug);
-		return jdbcService.updateById(content.getTableName(), content.getFieldNamesWithoutPrimaryKey(), id, body);
+		return jdbcService.updateDataById(content.getTableName(), content.getFieldNamesWithoutPrimaryKey(), id, body);
 	}
 
-	public Object createContent(String slug, JsonNode body) {
+	public Object createData(String slug, JsonNode body) {
 		Content content = getContentBySlug(slug);
-		return jdbcService.create(content.getTableName(), content.getFieldNamesWithoutPrimaryKey(), body);
+		return jdbcService.createData(content.getTableName(), content.getFieldNamesWithoutPrimaryKey(), body);
 	}
 
-	public Object deleteContent(String slug, String id) {
+	public Object deleteData(String slug, String id) {
 		Content content = getContentBySlug(slug);
-		return jdbcService.deleteById(content.getTableName(), id);
+		return jdbcService.deleteDataById(content.getTableName(), id);
 	}
 
 	private Content getContentBySlug(String slug) {

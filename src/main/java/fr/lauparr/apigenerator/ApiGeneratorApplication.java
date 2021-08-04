@@ -5,7 +5,6 @@ import fr.lauparr.apigenerator.entities.ContentField;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import fr.lauparr.apigenerator.repositories.ContentRepository;
 import fr.lauparr.apigenerator.services.ContentService;
-import fr.lauparr.apigenerator.services.JdbcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,8 +19,6 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 
 	@Autowired
 	private ContentRepository contentRepository;
-	@Autowired
-	private JdbcService tableCreator;
 	@Autowired
 	private ContentService contentService;
 
@@ -62,9 +59,6 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 			contentService.createContent(contentUser);
 			contentService.createContent(contentBlog);
 			contentService.createContent(contentComment);
-		}
-		for (Content content : contentRepository.findAll()) {
-			tableCreator.create(content);
 		}
 	}
 

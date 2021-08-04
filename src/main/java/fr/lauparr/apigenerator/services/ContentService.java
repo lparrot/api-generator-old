@@ -8,6 +8,7 @@ import fr.lauparr.apigenerator.pojo.dto.ContentSimpleDTO;
 import fr.lauparr.apigenerator.pojo.mapper.ContentFieldMapper;
 import fr.lauparr.apigenerator.pojo.mapper.ContentMapper;
 import fr.lauparr.apigenerator.pojo.vm.ContentFieldVM;
+import fr.lauparr.apigenerator.pojo.vm.ContentVM;
 import fr.lauparr.apigenerator.repositories.ContentFieldRepository;
 import fr.lauparr.apigenerator.repositories.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +45,32 @@ public class ContentService {
 	}
 
 	@Transactional
+	public ContentSimpleDTO createContent(ContentVM body) {
+		Content content = new Content();
+		contentMapper.updateEntityFromVm(body, content);
+		return createContent(content);
+	}
+
+	@Transactional
 	public ContentSimpleDTO createContent(Content content) {
 		if (Arrays.stream(content.getFieldNames()).noneMatch("id"::equals)) {
-			content.addField(ContentField.builder().name("Id").nullable(false).contentType(EnumContentFieldType.STRING).build());
+			content.addField(ContentField.builder().name("Id").nullable(false).primaryKey(true).hideInList(true).contentType(EnumContentFieldType.STRING).build());
 		}
 
-		contentRepository.save(content);
+		content = contentRepository.save(content);
+
+		jdbcService.createTable(content);
+
 		return contentMapper.entityToDto(content);
+	}
+
+	@Transactional
+	public void deleteContent(Long id) {
+		Content content = contentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+		jdbcService.deleteTable(content.getTableName());
+
+		contentRepository.deleteById(id);
 	}
 
 	@Transactional
@@ -66,7 +86,7 @@ public class ContentService {
 		contentFieldMapper.updateEntityFromVm(body, contentField);
 		contentField = contentFieldRepository.save(contentField);
 
-		jdbcService.updateField(contentField.getContent().getTableName(), oldFieldname, contentField.getDbFieldName(), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
+		jdbcService.updateTableField(contentField.getContent().getTableName(), oldFieldname, contentField.getDbFieldName(), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
 
 		return contentFieldMapper.entityToDto(contentField);
 	}
@@ -79,9 +99,8 @@ public class ContentService {
 		contentField.setContent(contentRepository.getOne(idContent));
 		contentField = contentFieldRepository.save(contentField);
 
-		jdbcService.createField(content.getTableName(), contentField.getDbFieldName(), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
+		jdbcService.createTableField(content.getTableName(), contentField.getDbFieldName(), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
 
 		return contentFieldMapper.entityToDto(contentField);
 	}
-
 }

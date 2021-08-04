@@ -25,12 +25,13 @@ import AppHeader from '~/components/app/AppHeader.vue'
 })
 export default class LayoutDefault extends Vue {
   @State('sidebar') sidebar: boolean
+  @State('contents') contents: any[]
   @Action('updateSidebar') updateSidebar
+  @Action('findContents') findContents
 
-  contents: any[] = []
 
   async fetch () {
-    this.contents = await this.$axios.$get('/contents')
+    await this.findContents()
   }
 }
 </script>

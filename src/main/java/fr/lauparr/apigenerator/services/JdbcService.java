@@ -34,7 +34,7 @@ public class JdbcService {
 	@Autowired
 	private DataSource dataSource;
 
-	public void create(Content content) {
+	public void createTable(Content content) {
 		try {
 			String tableName = content.getTableName();
 
@@ -47,7 +47,7 @@ public class JdbcService {
 
 			List<ContentField> allFieldWithoutPrimaryKey = content.getContentFields().stream().filter(contentField -> !contentField.isPrimaryKey()).collect(Collectors.toList());
 			for (ContentField contentField : allFieldWithoutPrimaryKey) {
-				createField(tableName, toSnakeCase(contentField.getName()), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
+				createTableField(tableName, toSnakeCase(contentField.getName()), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
 			}
 
 		} catch (SQLException e) {
@@ -70,11 +70,15 @@ public class JdbcService {
 		jdbcTemplate.update(String.format("create table if not exists %s (%s)", tableName, String.format("%s %s not null primary key", primaryKeyField.getDbFieldName(), primaryKeyField.getDatabaseTypeWithLength())));
 	}
 
-	public void createField(String tableName, String fieldName, String fieldType, boolean nullable) {
+	public void deleteTable(String tableName) {
+		jdbcTemplate.update(String.format("drop table if exists %s", tableName));
+	}
+
+	public void createTableField(String tableName, String fieldName, String fieldType, boolean nullable) {
 		jdbcTemplate.update(String.format("alter table %s add %s %s %s", tableName, fieldName, fieldType, nullable ? "" : " not null"));
 	}
 
-	public void updateField(String tableName, String oldFieldName, String newFieldName, String fieldType, boolean nullable) {
+	public void updateTableField(String tableName, String oldFieldName, String newFieldName, String fieldType, boolean nullable) {
 		jdbcTemplate.update(String.format("alter table %s change column %s %s %s %s", tableName, oldFieldName, newFieldName, fieldType, nullable ? "" : " not null"));
 	}
 
@@ -97,7 +101,7 @@ public class JdbcService {
 		return jdbcTemplate.queryForObject(String.format("select %s from %s where id = ?", String.join(",", fieldNames), tableName), rowMapper, id);
 	}
 
-	public Object updateById(String tableName, String[] fieldNames, String id, JsonNode body) {
+	public Object updateDataById(String tableName, String[] fieldNames, String id, JsonNode body) {
 		List<String> conditions = new ArrayList<>();
 		List<Object> values = new ArrayList<>();
 
@@ -112,7 +116,7 @@ public class JdbcService {
 		return findDataById(tableName, fieldNames, id);
 	}
 
-	public Object create(String tableName, String[] fieldNames, JsonNode body) {
+	public Object createData(String tableName, String[] fieldNames, JsonNode body) {
 		String catalog;
 		try {
 			catalog = dataSource.getConnection().getCatalog();
@@ -127,7 +131,7 @@ public class JdbcService {
 		return findDataById(tableName, fieldNames, id);
 	}
 
-	public boolean deleteById(String tableName, String id) {
+	public boolean deleteDataById(String tableName, String id) {
 		int updateCount = jdbcTemplate.update(String.format("delete from %s where id = ?", tableName), id);
 		return updateCount > 0;
 	}

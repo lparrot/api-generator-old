@@ -16,7 +16,7 @@
             <tbody :class="d_classes.body">
               <template v-if="items.length">
                 <tr v-for="(item, itemIndex) in items" :key="itemIndex" :class="d_classes.bodyTr">
-                  <td v-for="field in fields" :key="item + field.key" :class="typeof d_classes.bodyTd === 'function' ? d_classes.bodyTd(item[field.key]) : d_classes.bodyTd">
+                  <td v-for="field in fields" :key="item + field.key" :class="[typeof d_classes.bodyTd === 'function' ? d_classes.bodyTd(item[field.key]) : d_classes.bodyTd, field.class]">
                     <slot :item="item" :name="`cell(${field.key})`" :value="item[field.key]">
                       <span>{{ item[field.key] }}</span>
                     </slot>
@@ -72,7 +72,7 @@ export default class Datatable extends Vue {
     }
 
     if (this.withActions) {
-      this.fields.push({ key: 'actions', label: '' })
+      this.fields.push({ key: 'actions', label: '', class: 'w-20' })
     }
   }
 }

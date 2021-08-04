@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div class="relative">
-      <button :class="{'z-50': dropdownOpen}" class="relative w-full border-gray-300 bg-white h-10 rounded-md border pl-3 px-2 text-left cursor-pointer focus:outline-none focus:border-secondary-500 sm:text-sm" type="button" @click="dropdownOpen = !dropdownOpen">
+      <button :class="{'z-50': dropdownOpen}" class="relative w-full border-gray-300 bg-white h-10 rounded-md border pl-3 px-2 text-left cursor-pointer focus:outline-none focus:border-secondary-500 sm:text-sm" type="button" @click="dropdownOpen = !dropdownOpen" @keyup.down="open" @keyup.up="close">
         <div class="flex  items-center inline">
           <slot :model="model" name="content">
             {{ model }}
@@ -14,9 +14,9 @@
         </span>
       </button>
       <div v-if="dropdownOpen" class="absolute mt-1 w-full z-50 rounded-md bg-white shadow-lg">
-        <ul v-on-clickaway="() => this.dropdownOpen = false" aria-labelledby="listbox-label" class="max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" role="listbox" tabindex="-1">
+        <ul v-on-clickaway="close" aria-labelledby="listbox-label" class="max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" role="listbox" tabindex="-1">
           <template v-for="(item, itemIndex) in items">
-            <li :key="itemIndex" :class="{'bg-secondary-400 text-white': itemIndex === selectedIndex}" class="text-gray-900 hover:bg-secondary-500 hover:text-white select-none relative py-2 pl-3 pr-9 cursor-pointer" role="option" @click="onClick(item, itemIndex)">
+            <li :id="`dropdown-item-${itemIndex}`" :key="itemIndex" :class="{'bg-secondary-400 text-white': itemIndex === selectedIndex}" class="text-gray-900 hover:bg-secondary-500 hover:text-white select-none relative py-2 pl-3 pr-9 cursor-pointer focus:outline-black" role="option" tabindex="0" @click="onSelect(item, itemIndex)" @keyup.enter="onSelect(item, itemIndex)">
               <slot :item="item">
                 {{ item }}
               </slot>
@@ -50,9 +50,25 @@ export default class Dropdown extends Vue {
 
   toggle () {
     this.dropdownOpen = !this.dropdownOpen
+    if (this.dropdownOpen) {
+      this.focusFirstItem()
+    }
   }
 
-  onClick (item, itemIndex) {
+  open () {
+    this.dropdownOpen = true
+    this.focusFirstItem()
+  }
+
+  close () {
+    this.dropdownOpen = false
+  }
+
+  focusFirstItem () {
+    this.$nextTick(() => this.$el.querySelector('#dropdown-item-0').focus())
+  }
+
+  onSelect (item, itemIndex) {
     this.toggle()
     this.selectedIndex = itemIndex
     this.model = item

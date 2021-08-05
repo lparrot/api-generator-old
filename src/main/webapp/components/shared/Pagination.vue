@@ -1,6 +1,6 @@
 <template>
-  <div class="min-w-max">
-    <section class="flex justify-between bg-white rounded-lg border border-gray-200 px-10 py-3 text-gray-700 font-montserrat">
+  <div class="w-full">
+    <section class="flex justify-between bg-white rounded-lg border border-gray-200 px-10 py-3 text-gray-700">
       <ul class="flex items-center">
         <li class="pr-6">
           <button :disabled="!hasPrev" class="flex items-center justify-center hover:bg-gray-200 rounded-md transform rotate-45 h-6 w-6 disabled:cursor-not-allowed disabled:opacity-50" @click.prevent="changePage(prevPage)">

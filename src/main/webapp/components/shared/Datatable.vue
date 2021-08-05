@@ -1,11 +1,12 @@
 <template>
   <div class="container mx-auto">
     <div class="py-8">
-      <div class="py-4 overflow-x-auto">
-        <div class="flex justify-center mb-2">
-          <pagination :pagination.sync="paginationSync" @page-changed="onChangePage"/>
-        </div>
 
+      <div class="flex justify-center mb-2">
+        <pagination :pagination.sync="paginationSync" @page-changed="onChangePage"/>
+      </div>
+
+      <div class="py-4 overflow-x-auto">
         <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
           <table :class="d_classes.table">
             <thead :class="d_classes.head">
@@ -35,11 +36,12 @@
             </tbody>
           </table>
         </div>
-
-        <div class="flex justify-center mt-2">
-          <pagination :pagination.sync="paginationSync" @page-changed="onChangePage"/>
-        </div>
       </div>
+
+      <div class="flex justify-center mt-2">
+        <pagination :pagination.sync="paginationSync" @page-changed="onChangePage"/>
+      </div>
+
     </div>
   </div>
 </template>

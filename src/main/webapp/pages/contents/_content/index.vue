@@ -1,11 +1,11 @@
 <template>
   <div v-if="!$fetchState.pending">
-    <h3 class="text-gray-700 text-3xl font-medium pb-4">Content of {{ content.name }} table</h3>
+    <h3 class="app-title">Content of {{ content.name }} table</h3>
 
-    <div class="my-4">
+    <div class="flex flex-col md:flex-row gap-2 my-4">
       <router-link :to="`/contents/${content.id}/edit`" class="p-btn--primary">Add new item</router-link>
-      <router-link :to="`/content-types/${content.id}`" class="p-btn--success ml-2">Edit content structure</router-link>
-      <button class="p-btn--danger ml-2" @click="deleteContent">Delete content {{ content.name }}</button>
+      <router-link :to="`/content-types/${content.id}`" class="p-btn--success">Edit content structure</router-link>
+      <button class="p-btn--danger" @click="deleteContent">Delete content {{ content.name }}</button>
     </div>
 
     <datatable :fields="fieldForDatatable" :items="list" :pagination.sync="pagination" with-actions @context-changed="onDatatableContextChanged">

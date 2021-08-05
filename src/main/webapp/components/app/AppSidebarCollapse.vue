@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="flex items-center justify-between px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" role="button" @click="toggleOpen">
-      <div class="flex items-center">
+      <div class="flex items-center gap-2">
         <slot name="menu">
-          <i v-if="icon" :class="icon" class="flex-shrink-0 mr-2 text-gray-400 transition group-hover:text-gray-300"></i>
+          <i v-if="icon" :class="icon" class="flex-shrink-0 text-gray-400 transition group-hover:text-gray-300"></i>
           <span v-if="label">{{ label }}</span>
         </slot>
       </div>
@@ -13,7 +13,12 @@
     </div>
     <div v-show="d_open" class="mb-4" @click="updateSidebar(false)">
       <slot name="items">
-        <nuxt-link v-for="(item, itemIndex) in items" :key="itemIndex" :to="item.path" class="flex items-center py-2 pl-12 pr-4 transition cursor-pointer hover:bg-gray-800 hover:text-gray-200" exact exact-active-class="bg-gray-800 text-gray-200">{{ item.label }}</nuxt-link>
+        <nuxt-link v-for="(item, itemIndex) in items" :key="itemIndex" :to="item.path" class="flex items-center py-2 pl-10 pr-4 transition cursor-pointer hover:bg-gray-800 hover:text-gray-200" exact exact-active-class="bg-gray-800 text-gray-200">
+          <div class="flex items-center gap-2">
+            <i :class="item.icon" class="w-5"></i>
+            <div>{{ item.label }}</div>
+          </div>
+        </nuxt-link>
       </slot>
     </div>
   </div>

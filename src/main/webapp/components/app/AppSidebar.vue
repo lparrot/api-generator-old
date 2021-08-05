@@ -12,6 +12,8 @@
 
       <app-sidebar-collapse :items="sidebarItems" :open="true" icon="fas fa-cube" label="Collections"></app-sidebar-collapse>
 
+      <app-sidebar-collapse :items="adminItems" :open="true" icon="fas fa-cog" label="Administration"></app-sidebar-collapse>
+
     </nav>
   </nav>
 </template>
@@ -31,8 +33,19 @@ export default class AppSidebar extends Vue {
 
   @State('sidebar') sidebar: boolean
   @Action('updateSidebar') updateSidebar
+
   activeClass: string = 'bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100'
   inactiveClass: string = 'border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100'
+
+  get adminItems () {
+    return [
+      { path: '/admin/dashboard', label: 'Dashboard', icon: 'fas fa-th-large' },
+      { path: '/admin/settings', label: 'Settings', icon: 'fas fa-cubes' },
+      { path: '/admin/traces', label: 'Http traces', icon: 'fas fa-exchange-alt' },
+      { path: '/admin/logs', label: 'Logs', icon: 'fas fa-align-left' },
+      { path: '/admin/tasks', label: 'Tasks', icon: 'fas fa-clock' },
+    ]
+  }
 
   get sidebarItems () {
     return this.contents.map(content => {

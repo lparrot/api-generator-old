@@ -5,15 +5,19 @@ import fr.lauparr.apigenerator.entities.ContentField;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import fr.lauparr.apigenerator.repositories.ContentRepository;
 import fr.lauparr.apigenerator.services.ContentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @SpringBootApplication
 public class ApiGeneratorApplication implements CommandLineRunner {
 
@@ -22,8 +26,26 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 	@Autowired
 	private ContentService contentService;
 
+	private static ConfigurableApplicationContext context;
+
 	public static void main(String[] args) {
-		SpringApplication.run(ApiGeneratorApplication.class, args);
+		context = SpringApplication.run(ApiGeneratorApplication.class, args);
+	}
+
+	public static void restart() {
+		if (context != null) {
+			log.info("Server restarting ...");
+			ApplicationArguments args = context.getBean(ApplicationArguments.class);
+			Thread thread = new Thread(() -> {
+				context.close();
+				context = SpringApplication.run(ApiGeneratorApplication.class, args.getSourceArgs());
+			});
+
+			thread.setDaemon(false);
+			thread.start();
+		} else {
+			log.error("Application context cannot be recovered.");
+		}
 	}
 
 	@Override

@@ -2,11 +2,14 @@ package fr.lauparr.apigenerator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.lauparr.apigenerator.entities.Content;
+import fr.lauparr.apigenerator.exceptions.DataNotFoundException;
 import fr.lauparr.apigenerator.pojo.dto.PaginationDTO;
 import fr.lauparr.apigenerator.repositories.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class EntryPointService {
@@ -42,6 +45,6 @@ public class EntryPointService {
 	}
 
 	private Content getContentBySlug(String slug) {
-		return contentRepository.findBySlugEqualsIgnoreCase(slug);
+		return Optional.ofNullable(contentRepository.findBySlugEqualsIgnoreCase(slug)).orElseThrow(DataNotFoundException::new);
 	}
 }

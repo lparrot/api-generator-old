@@ -1,6 +1,6 @@
 <template>
   <div v-if="!$fetchState.pending">
-    <h3 class="text-gray-700 text-3xl font-medium">{{ mode === 'add' ? `Adding new ${ content.name }` : `Edit ${ content.name }` }}</h3>
+    <h3 class="app-title">{{ mode === 'add' ? `Adding new ${ content.name }` : `Edit ${ content.name }` }}</h3>
 
     <form @submit.prevent="submit">
       <div v-for="(field, fieldIndex) in fields" :key="fieldIndex">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="text-gray-700 text-3xl font-medium">Blank Page</h3>
+    <h3 class="app-title">Blank Page</h3>
   </div>
 </template>
 

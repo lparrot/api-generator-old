@@ -3,6 +3,7 @@ package fr.lauparr.apigenerator.services;
 import fr.lauparr.apigenerator.entities.Content;
 import fr.lauparr.apigenerator.entities.ContentField;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
+import fr.lauparr.apigenerator.exceptions.DataNotFoundException;
 import fr.lauparr.apigenerator.pojo.dto.ContentFieldSimpleDTO;
 import fr.lauparr.apigenerator.pojo.dto.ContentSimpleDTO;
 import fr.lauparr.apigenerator.pojo.mapper.ContentFieldMapper;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class ContentService {
 
 	@Transactional(readOnly = true)
 	public ContentSimpleDTO getContentById(Long id) {
-		return contentMapper.entityToDto(contentRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+		return contentMapper.entityToDto(contentRepository.findById(id).orElseThrow(DataNotFoundException::new));
 	}
 
 	@Transactional
@@ -66,7 +66,7 @@ public class ContentService {
 
 	@Transactional
 	public ContentSimpleDTO updateContent(Long id, ContentVM body) {
-		Content content = contentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		Content content = contentRepository.findById(id).orElseThrow(DataNotFoundException::new);
 
 		String oldTableName = content.getTableName();
 
@@ -83,7 +83,7 @@ public class ContentService {
 
 	@Transactional
 	public void deleteContent(Long id) {
-		Content content = contentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		Content content = contentRepository.findById(id).orElseThrow(DataNotFoundException::new);
 
 		jdbcService.deleteTable(content.getTableName());
 
@@ -92,12 +92,12 @@ public class ContentService {
 
 	@Transactional
 	public ContentFieldSimpleDTO updateField(Long idContent, Long idField, ContentFieldVM body) {
-		ContentField contentField = contentFieldRepository.findById(idField).orElseThrow(EntityNotFoundException::new);
+		ContentField contentField = contentFieldRepository.findById(idField).orElseThrow(DataNotFoundException::new);
 
 		String oldFieldname = contentField.getDbFieldName();
 
 		if (contentField.getContent() != null && !idContent.equals(contentField.getContent().getId())) {
-			throw new EntityNotFoundException();
+			throw new DataNotFoundException();
 		}
 
 		contentFieldMapper.updateEntityFromVm(body, contentField);
@@ -110,7 +110,7 @@ public class ContentService {
 
 	@Transactional
 	public ContentFieldSimpleDTO addField(Long idContent, ContentFieldVM body) {
-		Content content = contentRepository.findById(idContent).orElseThrow(EntityNotFoundException::new);
+		Content content = contentRepository.findById(idContent).orElseThrow(DataNotFoundException::new);
 		ContentField contentField = new ContentField();
 		contentFieldMapper.updateEntityFromVm(body, contentField);
 		contentField.setContent(contentRepository.getOne(idContent));

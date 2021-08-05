@@ -25,25 +25,21 @@ public class EntryPointController {
 
 	@GetMapping("/{id}/{*path}")
 	public ResponseEntity<JsonNode> entryGetId(ServerHttpRequest request, @PathVariable String slug, @PathVariable String id, @PathVariable String path) {
-		System.out.println("request = " + request + ", slug = " + slug + ", id = " + id + ", path = " + path);
 		return ResponseEntity.ok(JsonNodeFactory.instance.pojoNode(entryPointService.getDataById(slug, id)));
 	}
 
 	@PutMapping("/{id}/{*path}")
 	public ResponseEntity<JsonNode> entryPut(ServerHttpRequest request, @PathVariable String slug, @PathVariable String id, @PathVariable String path, @RequestBody(required = false) JsonNode body) {
-		System.out.println("request = " + request + ", slug = " + slug + ", id = " + id + ", path = " + path + ", body = " + body);
 		return ResponseEntity.ok(JsonNodeFactory.instance.pojoNode(entryPointService.updateData(slug, id, body)));
 	}
 
 	@PostMapping("/{*path}")
 	public ResponseEntity<JsonNode> entryPost(ServerHttpRequest request, @PathVariable String slug, @PathVariable String path, @RequestBody(required = false) JsonNode body) {
-		System.out.println("request = " + request + ", slug = " + slug + ", path = " + path + ", body = " + body);
 		return ResponseEntity.ok(JsonNodeFactory.instance.pojoNode(entryPointService.createData(slug, body)));
 	}
 
 	@DeleteMapping("/{id}/{*path}")
 	public ResponseEntity<JsonNode> entryDelete(ServerHttpRequest request, @PathVariable String slug, @PathVariable String id, @PathVariable String path) {
-		System.out.println("request = " + request + ", slug = " + slug + ", id = " + id + ", path = " + path);
 		return ResponseEntity.ok(JsonNodeFactory.instance.pojoNode(entryPointService.deleteData(slug, id)));
 	}
 

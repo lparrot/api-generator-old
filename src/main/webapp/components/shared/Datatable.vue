@@ -2,6 +2,10 @@
   <div class="container mx-auto">
     <div class="py-8">
       <div class="py-4 overflow-x-auto">
+        <div class="flex justify-center mb-2">
+          <pagination :pagination.sync="paginationSync" @page-changed="onChangePage"/>
+        </div>
+
         <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
           <table :class="d_classes.table">
             <thead :class="d_classes.head">
@@ -31,13 +35,18 @@
             </tbody>
           </table>
         </div>
+
+        <div class="flex justify-center mt-2">
+          <pagination :pagination.sync="paginationSync" @page-changed="onChangePage"/>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, Emit, Prop, PropSync, Vue } from 'nuxt-property-decorator'
+import Pagination from '~/components/shared/Pagination.vue'
 
 export interface DatatableClasses {
   table?: string
@@ -56,12 +65,17 @@ export interface DatatableField {
   class?: string | string[]
 }
 
-@Component
+@Component({
+  components: {
+    Pagination,
+  },
+})
 export default class Datatable extends Vue {
   @Prop({ type: Object }) classes!: DatatableClasses
   @Prop({ type: Array, required: true }) fields!: DatatableField[]
   @Prop({ type: Array, required: true }) items!: any[]
   @Prop({ type: Boolean, default: false }) withActions!: boolean
+  @PropSync('pagination') paginationSync
 
   d_classes = this.classes
 
@@ -75,6 +89,11 @@ export default class Datatable extends Vue {
     if (this.withActions) {
       this.fields.push({ key: 'actions', label: '', class: 'w-20' })
     }
+  }
+
+  @Emit('context-changed')
+  async onChangePage (pagination) {
+    return pagination
   }
 }
 </script>

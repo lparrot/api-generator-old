@@ -8,7 +8,7 @@
       <button class="p-btn--danger ml-2" @click="deleteContent">Delete content {{ content.name }}</button>
     </div>
 
-    <datatable :fields="fieldForDatatable" :items="list" with-actions>
+    <datatable :fields="fieldForDatatable" :items="list" :pagination.sync="pagination" with-actions @context-changed="onDatatableContextChanged">
       <template #cell(actions)="{item}">
         <div class="flex">
           <router-link :to="`/contents/${content.id}/edit/${item.id}`" class="p-btn--primary block rounded-full px-2 py-1.5 mx-1" @>
@@ -38,6 +38,7 @@ export default class PageContentIndex extends Vue {
 
   content: any = {}
   list: any[] = []
+  pagination: any = { page: 1, size: 15, total: 0 }
 
   get fields () {
     return this.content.contentFields
@@ -52,13 +53,23 @@ export default class PageContentIndex extends Vue {
 
   async fetch () {
     this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
-    this.list = await this.$axios.$get(`/${ this.content.slug }`)
+    await this.search()
+  }
+
+  async search () {
+    const res = await this.$axios.$get(`/${ this.content.slug }`, { params: { size: this.pagination.size, page: this.pagination.page } })
+    this.list = res.list
+    this.pagination.total = res.total
   }
 
   async deleteContent () {
     await this.$axios.$delete(`/contents/${ this.content.id }`)
     await this.$router.push(`/content-types`)
     await this.findContents()
+  }
+
+  async onDatatableContextChanged (pagination) {
+    await this.search()
   }
 }
 </script>

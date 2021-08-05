@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.lauparr.apigenerator.entities.Content;
 import fr.lauparr.apigenerator.entities.ContentField;
+import fr.lauparr.apigenerator.pojo.dto.PaginationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,24 +89,36 @@ public class JdbcService {
 		jdbcTemplate.update(String.format("alter table %s change column %s %s %s %s", tableName, oldFieldName, newFieldName, fieldType, nullable ? "" : " not null"));
 	}
 
-	public List<Object> findData(String tableName, String[] fieldNames, Pageable pageable) {
+	public PaginationDTO findData(String tableName, String[] fieldNames, Pageable pageable) {
 		StringBuilder pageQuery = new StringBuilder();
 
 		// Création de la pagination
-		if (pageable != null && pageable.isPaged()) {
-			if (pageable.getSort().isSorted()) {
-				Sort.Order order = pageable.getSort().toList().get(0);
-				pageQuery.append(String.format(" order by %s %s", order.getProperty(), order.getDirection()));
-			}
-
-			int page = Math.max(pageable.getPageNumber() - 1, 0);
-			pageQuery.append(String.format(" limit %s offset %s", pageable.getPageSize(), page * pageable.getPageSize()));
+		if (pageable.getSort().isSorted()) {
+			Sort.Order order = pageable.getSort().toList().get(0);
+			pageQuery.append(String.format(" order by %s %s", order.getProperty(), order.getDirection()));
 		}
 
-		System.out.println(String.format("select %s from %s %s", String.join(",", fieldNames), tableName, pageQuery));
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		pageQuery.append(String.format(" limit %s offset %s", pageable.getPageSize(), page * pageable.getPageSize()));
 
-		return jdbcTemplate
+		List<Object> objects = jdbcTemplate
 			.queryForList(String.format("select %s from %s %s", String.join(",", fieldNames), tableName, pageQuery))
+			.stream().map(map -> objectMapper.convertValue(map, Object.class))
+			.collect(Collectors.toList());
+
+		Integer total = jdbcTemplate.queryForObject(String.format("select count(*) from %s", tableName), Integer.class);
+
+		return PaginationDTO.builder()
+			.list(objects)
+			.page(pageable.getPageNumber())
+			.size(pageable.getPageSize())
+			.total(total)
+			.build();
+	}
+
+	public List<Object> findData(String tableName, String[] fieldNames) {
+		return jdbcTemplate
+			.queryForList(String.format("select %s from %s", String.join(",", fieldNames), tableName))
 			.stream().map(map -> objectMapper.convertValue(map, Object.class))
 			.collect(Collectors.toList());
 	}

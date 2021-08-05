@@ -75,6 +75,8 @@ export default {
       variants: {
         extend: {
           fontWeight: ['hover', 'focus'],
+          opacity: ['disabled'],
+          cursor: ['disabled'],
         },
       },
     },

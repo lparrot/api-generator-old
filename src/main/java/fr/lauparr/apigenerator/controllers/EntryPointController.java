@@ -20,7 +20,6 @@ public class EntryPointController {
 
 	@GetMapping("/{*path}")
 	public ResponseEntity<JsonNode> entryGet(ServerHttpRequest request, @PathVariable String slug, @PathVariable String path, Pageable page) {
-		System.out.println("request = " + request + ", slug = " + slug + ", path = " + path + ", page = " + page);
 		return ResponseEntity.ok(JsonNodeFactory.instance.pojoNode(entryPointService.getData(slug, page)));
 	}
 

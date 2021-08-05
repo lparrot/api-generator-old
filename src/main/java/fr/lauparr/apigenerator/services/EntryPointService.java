@@ -2,12 +2,11 @@ package fr.lauparr.apigenerator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.lauparr.apigenerator.entities.Content;
+import fr.lauparr.apigenerator.pojo.dto.PaginationDTO;
 import fr.lauparr.apigenerator.repositories.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class EntryPointService {
@@ -17,7 +16,7 @@ public class EntryPointService {
 	@Autowired
 	private ContentRepository contentRepository;
 
-	public List<Object> getData(String slug, Pageable page) {
+	public PaginationDTO getData(String slug, Pageable page) {
 		Content content = getContentBySlug(slug);
 		return jdbcService.findData(content.getTableName(), content.getFieldNames(), page);
 	}

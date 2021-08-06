@@ -55,6 +55,8 @@
 
       <div class="dashboard-card">
         <h5 class="dashboard-card-title">Health</h5>
+
+        <button class="p-btn--success w-full" @click="setThreads">Refresh</button>
       </div>
       <div class="dashboard-card">
         <h5 class="dashboard-card-title">Health</h5>
@@ -64,10 +66,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Action, Component, Vue } from 'nuxt-property-decorator'
 
 @Component
 export default class PageAdminDashboard extends Vue {
+  @Action('actuator/setThreads') setThreads
+
   health = {}
 
   async fetch () {

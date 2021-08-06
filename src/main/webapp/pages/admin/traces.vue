@@ -3,37 +3,40 @@
     <h3 class="app-title">Tasks</h3>
 
     <table class="w-full table-auto">
-      <thead>
+      <thead class="border-b">
         <tr>
-          <th class="text-left">Timestamp</th>
+          <th class="text-left py-2">Timestamp</th>
           <th class="text-left">Method</th>
           <th class="text-left">Status</th>
           <th class="text-left">Time</th>
           <th class="text-left">Path</th>
-          <th class="text-left"></th>
-          <th class="text-left"></th>
+          <th class="text-left">Principal</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(trace, traceIndex) in traces" :key="traceIndex">
-          <td class="">
-            <div>{{ new Date(trace.timestamp).toDateString() }}</div>
-          </td>
-          <td>
-            <div :class="getMethodColor(trace.request.method)">{{ trace.request.method }}</div>
-          </td>
-          <td>
-            <div :class="getStatusColor(trace.response.status)" class="px-2 py-1 rounded text-white text-xs">{{ trace.response.status }}</div>
-          </td>
-          <td>
-            {{ trace.timeTaken }} ms
-          </td>
-          <td>
-            <div class="text-lg text-primary-500 font-thin">{{ trace.request.uri }}</div>
-          </td>
-          <td></td>
-          <td></td>
-        </tr>
+        <template v-for="(trace, traceIndex) in traces">
+          <tr :key="traceIndex">
+            <td>
+              <span>{{ new Date(trace.timestamp).toDateString() }}</span>
+            </td>
+            <td>
+              <span :class="getMethodColor(trace.request.method)">{{ trace.request.method }}</span>
+            </td>
+            <td>
+              <span :class="getStatusColor(trace.response.status)" class="px-2 py-1 rounded text-white text-xs">{{ trace.response.status }}</span>
+            </td>
+            <td>
+              <span>{{ trace.timeTaken }} ms</span>
+            </td>
+            <td>
+              <span class="text-lg text-primary-500 font-thin">{{ trace.request.uri }}</span>
+            </td>
+            <td>
+              <span>{{ trace.principal }}</span>
+            </td>
+            <td></td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </section>

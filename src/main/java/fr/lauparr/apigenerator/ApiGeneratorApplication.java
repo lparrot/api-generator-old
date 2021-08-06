@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -25,6 +27,8 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 	private ContentRepository contentRepository;
 	@Autowired
 	private ContentService contentService;
+	@Autowired
+	private AuditEventRepository auditEventRepository;
 
 	private static ConfigurableApplicationContext context;
 
@@ -35,10 +39,14 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 	public static void restart() {
 		if (context != null) {
 			log.info("Server restarting ...");
+
 			ApplicationArguments args = context.getBean(ApplicationArguments.class);
 			Thread thread = new Thread(() -> {
 				context.close();
 				context = SpringApplication.run(ApiGeneratorApplication.class, args.getSourceArgs());
+
+				AuditEventRepository auditEventRepository = context.getBean(AuditEventRepository.class);
+				auditEventRepository.add(new AuditEvent(null, "APP_RESTARTED"));
 			});
 
 			thread.setDaemon(false);
@@ -80,6 +88,8 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 			contentService.createContent(contentBlog);
 			contentService.createContent(contentComment);
 		}
+
+		auditEventRepository.add(new AuditEvent(null, "APP_STARTED"));
 	}
 
 

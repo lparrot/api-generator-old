@@ -42,6 +42,7 @@ export default class AppSidebar extends Vue {
       { path: '/admin/dashboard', label: 'Dashboard', icon: 'fas fa-th-large' },
       { path: '/admin/settings', label: 'Settings', icon: 'fas fa-cubes' },
       { path: '/admin/traces', label: 'Http traces', icon: 'fas fa-exchange-alt' },
+      { path: '/admin/events', label: 'Journal', icon: 'fab fa-elementor' },
       { path: '/admin/logs', label: 'Logs', icon: 'fas fa-align-left' },
       { path: '/admin/tasks', label: 'Tasks', icon: 'fas fa-clock' },
     ]

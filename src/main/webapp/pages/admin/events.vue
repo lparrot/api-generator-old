@@ -35,12 +35,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
+import { Context } from '@nuxt/types'
 
 @Component
 export default class PageAdminEvents extends Vue {
   events = null
 
-  async asyncData (ctx) {
+  async asyncData (ctx: Context) {
     const res = await ctx.$axios.$get('/actuator/auditevents')
 
     return {

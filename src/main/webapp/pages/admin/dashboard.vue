@@ -8,48 +8,22 @@
         <h5 class="dashboard-card-title">Health</h5>
 
         <div class="description-container">
-          <div class="description-item">
-            <div class="description-item-right font-bold">
-              <span>Instance</span>
+          <template v-for="(component, componentName, componentIndex) in health.components">
+            <div :key="componentIndex" class="description-item">
+              <div class="description-item-right font-bold">
+                <span>{{ componentName }}</span>
+              </div>
+              <span :class="getStatusClass(component.status)" class="font-bold">{{ component.status }}</span>
             </div>
-            <span :class="getStatusClass(health.components.ping.status)">{{ health.components.ping.status }}</span>
-          </div>
-          <div class="description-item">
-            <div class="description-item-right font-bold">
-              <span>Database</span>
+            <div v-for="(details, detailsName, detailsIndex) in component.details" :key="componentIndex" class="description-item">
+              <div class="description-item-right pl-6">
+                <span>{{ detailsName }}</span>
+              </div>
+              <span v-if="componentName === 'diskSpace' && typeof details === 'number'">{{ $utils.formatBytes(details) }}</span>
+              <pre v-if="typeof details === 'object'">{{ details }}</pre>
+              <span v-else>{{ details }}</span>
             </div>
-            <span :class="getStatusClass(health.components.db.status)">{{ health.components.db.status }}</span>
-          </div>
-          <div class="description-item">
-            <div class="description-item-right pl-6">
-              <span>Vendor</span>
-            </div>
-            <span>{{ health.components.db.details.database }}</span>
-          </div>
-          <div class="description-item">
-            <div class="description-item-right font-bold">
-              <span>Disk space</span>
-            </div>
-            <span :class="getStatusClass(health.components.diskSpace.status)">{{ health.components.diskSpace.status }}</span>
-          </div>
-          <div class="description-item">
-            <div class="description-item-right pl-6">
-              <span>Total</span>
-            </div>
-            <span>{{ $utils.formatBytes(health.components.diskSpace.details.total) }}</span>
-          </div>
-          <div class="description-item">
-            <div class="description-item-right pl-6">
-              <span>Free</span>
-            </div>
-            <span>{{ $utils.formatBytes(health.components.diskSpace.details.free) }}</span>
-          </div>
-          <div class="description-item">
-            <div class="description-item-right pl-6">
-              <span>Threshold</span>
-            </div>
-            <span>{{ $utils.formatBytes(health.components.diskSpace.details.threshold) }}</span>
-          </div>
+          </template>
         </div>
       </div>
 

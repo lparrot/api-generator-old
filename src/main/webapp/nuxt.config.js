@@ -34,6 +34,7 @@ export default {
     '@/plugins/utils',
     '@/plugins/date-fns',
     '@/plugins/chartjs',
+    '@/plugins/websocket',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -66,6 +67,11 @@ export default {
     '/api': {
       target: 'http://localhost:8080',
       changeOrigin: true,
+    },
+    '/ws': {
+      target: 'http://localhost:8080',
+      changeOrigin: false,
+      ws: true,
     },
   },
 

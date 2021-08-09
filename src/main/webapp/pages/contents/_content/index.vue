@@ -57,13 +57,13 @@ export default class PageContentIndex extends Vue {
   }
 
   async search () {
-    const res = await this.$axios.$get(`/${ this.content.slug }`, { params: { size: this.pagination.size, page: this.pagination.page } })
+    const res = await this.$axios.$get(`/data/${ this.content.slug }`, { params: { size: this.pagination.size, page: this.pagination.page } })
     this.list = res.list
     this.pagination.total = res.total
   }
 
   async deleteData (item) {
-    await this.$axios.$delete(`/${ this.content.slug }/${ item.id }`)
+    await this.$axios.$delete(`/data/${ this.content.slug }/${ item.id }`)
     await this.search()
   }
 

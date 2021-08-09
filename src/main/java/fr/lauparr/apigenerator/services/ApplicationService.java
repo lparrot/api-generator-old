@@ -10,6 +10,7 @@ import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -33,8 +34,8 @@ public class ApplicationService {
 			this.threads.remove(0);
 		}
 		this.threads.add(new ThreadInfoDTO(
-			getValueFromMetric("jvm.threads.live", Statistic.VALUE),
-			getValueFromMetric("jvm.threads.daemon", Statistic.VALUE)
+			getValueFromMetric("jvm.threads.live", Statistic.VALUE, null),
+			getValueFromMetric("jvm.threads.daemon", Statistic.VALUE, null)
 		));
 	}
 
@@ -43,14 +44,14 @@ public class ApplicationService {
 			this.jvmInfos.remove(0);
 		}
 		this.jvmInfos.add(new JvmInfoDTO(
-			getValueFromMetric("jvm.memory.used", Statistic.VALUE),
-			getValueFromMetric("jvm.memory.committed", Statistic.VALUE),
-			getValueFromMetric("jvm.memory.max", Statistic.VALUE)
+			getValueFromMetric("jvm.memory.used", Statistic.VALUE, Collections.singletonList("area:heap")),
+			getValueFromMetric("jvm.memory.committed", Statistic.VALUE, Collections.singletonList("area:heap")),
+			getValueFromMetric("jvm.memory.max", Statistic.VALUE, Collections.singletonList("area:heap"))
 		));
 	}
 
-	private double getValueFromMetric(String metricName, Statistic statistic) {
-		MetricsEndpoint.Sample metric = metricsEndpoint.metric(metricName, new ArrayList<>()).getMeasurements()
+	private double getValueFromMetric(String metricName, Statistic statistic, List<String> tags) {
+		MetricsEndpoint.Sample metric = metricsEndpoint.metric(metricName, tags == null ? new ArrayList<>() : tags).getMeasurements()
 			.stream().filter(measure -> measure.getStatistic().equals(statistic))
 			.findFirst().orElse(null);
 		return metric != null ? metric.getValue() : 0;

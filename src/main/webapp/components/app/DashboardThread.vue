@@ -56,13 +56,14 @@ export default class DashboardThread extends Vue {
             intersect: false,
           },
           scales: {
+            ticks: {
+              beginAtZero: true,
+            },
             y: {
               grid: {
                 display: false,
               },
-              ticks: {
-                beginAtZero: true,
-              },
+
             },
             x: {
               display: false,

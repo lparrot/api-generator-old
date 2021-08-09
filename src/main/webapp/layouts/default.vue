@@ -28,7 +28,6 @@ export default class LayoutDefault extends Vue {
   @Action('updateSidebar') updateSidebar
   @Action('findContents') findContents
 
-
   async fetch () {
     await this.findContents()
   }

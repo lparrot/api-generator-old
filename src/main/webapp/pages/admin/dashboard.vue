@@ -69,6 +69,19 @@ export default class PageAdminDashboard extends Vue {
     }
   }
 
+  fetch () {
+    this.$socket.client.subscribe('/topic/metrics', async (message) => {
+      await this.setThreads()
+      await this.setJvmInfos()
+    }, { id: 'sub-metrics' })
+  }
+
+  destroyed () {
+    if (this.$socket.client.connected) {
+      this.$socket.client.unsubscribe('sub-metrics')
+    }
+  }
+
   getStatusClass (status) {
     if (status === 'DOWN') {
       return 'text-danger-500'

@@ -102,17 +102,17 @@ export default class PageIndex extends Vue {
   async fetch () {
     this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
     if (this.mode === 'edit') {
-      this.item = await this.$axios.$get(`/${ this.content.slug }/${ this.$route.params.id }`)
+      this.item = await this.$axios.$get(`/data/${ this.content.slug }/${ this.$route.params.id }`)
     }
   }
 
   async submit () {
     switch (this.mode) {
       case 'add':
-        await this.$axios.$post(`/${ this.content.slug }`, this.item)
+        await this.$axios.$post(`/data/${ this.content.slug }`, this.item)
         break
       case 'edit':
-        await this.$axios.$put(`/${ this.content.slug }/${ this.item.id }`, this.item)
+        await this.$axios.$put(`/data/${ this.content.slug }/${ this.item.id }`, this.item)
         break
       default:
         break

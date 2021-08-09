@@ -6,6 +6,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,10 +15,13 @@ public class AdminMetricTimer implements Job {
 
 	@Autowired
 	private ApplicationService applicationService;
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		applicationService.addThread();
 		applicationService.addJvmInfo();
+		simpMessagingTemplate.convertAndSend("/topic/metrics", true);
 	}
 }

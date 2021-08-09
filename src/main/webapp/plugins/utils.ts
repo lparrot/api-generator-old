@@ -44,16 +44,22 @@ class Utils {
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $utils: Utils
+    readonly $utils: Utils
   }
 }
 
 declare module '@nuxt/types' {
   interface NuxtAppOptions {
-    $utils: Utils
+    readonly $utils: Utils
   }
 
   interface Context {
-    $utils: Utils
+    readonly $utils: Utils
+  }
+}
+
+declare module 'vuex' {
+  interface Store<S> {
+    readonly $utils: Utils
   }
 }

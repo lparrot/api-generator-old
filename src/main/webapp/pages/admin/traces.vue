@@ -10,29 +10,25 @@
           <th class="text-left">Status</th>
           <th class="text-left">Time</th>
           <th class="text-left">Path</th>
-          <th class="text-left">Principal</th>
         </tr>
       </thead>
       <tbody>
         <template v-for="(trace, traceIndex) in traces">
           <tr :key="traceIndex">
-            <td>
+            <td class="w-40 whitespace-nowrap">
               <span>{{ new Date(trace.timestamp).toDateString() }}</span>
             </td>
-            <td>
+            <td class="w-20 whitespace-nowrap">
               <span :class="getMethodColor(trace.request.method)">{{ trace.request.method }}</span>
             </td>
-            <td>
+            <td class="w-20 whitespace-nowrap">
               <span :class="getStatusColor(trace.response.status)" class="px-2 py-1 rounded text-white text-xs">{{ trace.response.status }}</span>
             </td>
-            <td>
+            <td class="w-20 whitespace-nowrap">
               <span>{{ trace.timeTaken }} ms</span>
             </td>
             <td>
               <span class="text-lg text-primary-500 font-thin">{{ trace.request.uri }}</span>
-            </td>
-            <td>
-              <span>{{ trace.principal }}</span>
             </td>
             <td></td>
           </tr>

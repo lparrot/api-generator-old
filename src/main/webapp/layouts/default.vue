@@ -1,8 +1,7 @@
 <template>
-  <section class="min-h-screen bg-gray-50">
+  <section class="bg-gray-50">
     <app-sidebar :contents="contents"/>
     <div class="ml-0 transition md:ml-60">
-      <app-header/>
       <div class="p-4">
         <nuxt/>
       </div>

@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!$fetchState.pending">
+  <section>
     <h3 class="app-title">Admin dashboard</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 items-stretch gap-2">
@@ -15,12 +15,12 @@
               </div>
               <span :class="getStatusClass(component.status)" class="font-bold">{{ component.status }}</span>
             </div>
-            <div v-for="(details, detailsName, detailsIndex) in component.details" :key="componentIndex" class="description-item">
+            <div v-for="(details, detailsName, detailsIndex) in component.details" :key="detailsIndex + ' ' + componentIndex" class="description-item">
               <div class="description-item-right pl-6">
                 <span>{{ detailsName }}</span>
               </div>
               <span v-if="componentName === 'diskSpace' && typeof details === 'number'">{{ $utils.formatBytes(details) }}</span>
-              <pre v-if="typeof details === 'object'">{{ details }}</pre>
+              <pre v-else-if="typeof details === 'object'">{{ details }}</pre>
               <span v-else>{{ details }}</span>
             </div>
           </template>
@@ -28,12 +28,15 @@
       </div>
 
       <div class="dashboard-card">
-        <h5 class="dashboard-card-title">Health</h5>
-
+        <h5 class="dashboard-card-title">Threads</h5>
         <button class="p-btn--success w-full" @click="setThreads">Refresh</button>
+        <dashboard-thread/>
       </div>
+
       <div class="dashboard-card">
-        <h5 class="dashboard-card-title">Health</h5>
+        <h5 class="dashboard-card-title">JVM</h5>
+        <button class="p-btn--success w-full" @click="setJvmInfos">Refresh</button>
+        <dashboard-jvm/>
       </div>
     </div>
   </section>
@@ -41,15 +44,29 @@
 
 <script lang="ts">
 import { Action, Component, Vue } from 'nuxt-property-decorator'
+import { Chart } from 'chart.js'
+import DashboardThread from '~/components/app/DashboardThread.vue'
+import DashboardJvm from '~/components/app/DashboardJvm.vue'
 
-@Component
+@Component({
+  components: {
+    DashboardThread,
+    DashboardJvm,
+  },
+})
 export default class PageAdminDashboard extends Vue {
+
   @Action('actuator/setThreads') setThreads
+  @Action('actuator/setJvmInfos') setJvmInfos
 
   health = {}
+  chartThread: Chart = null
 
-  async fetch () {
-    this.health = await this.$axios.$get('/actuator/health')
+  async asyncData (ctx) {
+    const res_health = await ctx.$axios.$get('/actuator/health')
+    return {
+      health: res_health,
+    }
   }
 
   getStatusClass (status) {
@@ -58,6 +75,7 @@ export default class PageAdminDashboard extends Vue {
     }
     return 'text-success-500'
   }
+
 }
 </script>
 

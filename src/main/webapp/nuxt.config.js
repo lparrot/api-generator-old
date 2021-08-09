@@ -32,7 +32,8 @@ export default {
   plugins: [
     '@/plugins/vue-fragment',
     '@/plugins/utils',
-    '@/plugins/dayjs',
+    '@/plugins/date-fns',
+    '@/plugins/chartjs',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

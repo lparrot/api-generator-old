@@ -50,6 +50,9 @@ export default class DashboardJvm extends Vue {
         type: 'line',
         data,
         options: {
+          animation: {
+            duration: 0,
+          },
           responsive: true,
           interaction: {
             mode: 'index',

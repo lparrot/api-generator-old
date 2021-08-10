@@ -137,7 +137,9 @@ export default class PageContentTypes extends Vue {
       this.content = await this.$axios.$put(`/contents/${ this.content.id }`, this.content)
     } else {
       const content = await this.$axios.$post(`/contents`, this.content)
-      await this.$router.push(`/content-types/${ content.id }`)
+      if (content !== '') {
+        await this.$router.push(`/content-types/${ content.id }`)
+      }
     }
     await this.findContents()
   }
@@ -152,7 +154,9 @@ export default class PageContentTypes extends Vue {
       this.$set(this.content.contentFields, this.content.contentFields.findIndex(field => field.dbFieldName === this.fieldEdit.dbFieldName), field)
     } else {
       field = await this.$axios.$post(`/contents/${ this.content.id }/fields`, this.fieldEdit)
-      this.content.contentFields.push(field)
+      if (field !== '') {
+        this.content.contentFields.push(field)
+      }
     }
     this.fieldEdit = null
     this.modalEditField.hide()

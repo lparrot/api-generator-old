@@ -22,11 +22,11 @@ public class WebSocketEventListener {
 
 	@EventListener
 	public void handleWebSocketConnectListener(final SessionConnectedEvent event) {
-		System.out.println("event = " + event);
+		//
 	}
 
 	@EventListener
 	public void handleWebSocketDisconnectListener(final SessionDisconnectEvent event) {
-		System.out.println("event = " + event);
+		//
 	}
 }

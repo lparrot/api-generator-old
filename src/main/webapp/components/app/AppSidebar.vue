@@ -10,7 +10,13 @@
         <nuxt-link :to="`/content-types`" class="p-btn--success w-full">Add content</nuxt-link>
       </div>
 
-      <app-sidebar-collapse :items="sidebarItems" :open="true" icon="fas fa-cube" label="Collections"></app-sidebar-collapse>
+      <template v-if="sidebarItems.length > 0">
+        <app-sidebar-collapse :items="sidebarItems" :open="true" icon="fas fa-cube" label="Collections"></app-sidebar-collapse>
+      </template>
+
+      <template v-else>
+        <div class="px-4 py-5">No content.</div>
+      </template>
 
       <app-sidebar-collapse :items="adminItems" :open="true" icon="fas fa-cog" label="Administration"></app-sidebar-collapse>
 

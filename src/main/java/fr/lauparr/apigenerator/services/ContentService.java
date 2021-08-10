@@ -2,6 +2,8 @@ package fr.lauparr.apigenerator.services;
 
 import fr.lauparr.apigenerator.entities.Content;
 import fr.lauparr.apigenerator.entities.ContentField;
+import fr.lauparr.apigenerator.entities.ContentField_;
+import fr.lauparr.apigenerator.entities.Content_;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import fr.lauparr.apigenerator.exceptions.DataNotFoundException;
 import fr.lauparr.apigenerator.pojo.dto.ContentFieldSimpleDTO;
@@ -14,6 +16,7 @@ import fr.lauparr.apigenerator.repositories.ContentFieldRepository;
 import fr.lauparr.apigenerator.repositories.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +56,14 @@ public class ContentService {
 
 	@Transactional
 	public ContentSimpleDTO createContent(Content content) {
+		String name = content.getName();
+
+		long count = contentRepository.count((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Content_.name), name));
+
+		if (count > 0) {
+			throw new IllegalArgumentException(String.format("Un contenu ayant pour nom %s existe déjà.", name));
+		}
+
 		if (Arrays.stream(content.getFieldNames()).noneMatch("id"::equals)) {
 			content.addField(ContentField.builder().name("Id").nullable(false).primaryKey(true).hideInList(true).contentType(EnumContentFieldType.STRING).build());
 		}
@@ -111,13 +122,23 @@ public class ContentService {
 	@Transactional
 	public ContentFieldSimpleDTO addField(Long idContent, ContentFieldVM body) {
 		Content content = contentRepository.findById(idContent).orElseThrow(DataNotFoundException::new);
-		ContentField contentField = new ContentField();
-		contentFieldMapper.updateEntityFromVm(body, contentField);
-		contentField.setContent(contentRepository.getOne(idContent));
-		contentField = contentFieldRepository.save(contentField);
 
-		jdbcService.createTableField(content.getTableName(), contentField.getDbFieldName(), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
+		Specification<ContentField> criteriaId = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(ContentField_.CONTENT).get(Content_.ID), idContent);
+		Specification<ContentField> criteriaName = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(ContentField_.NAME), body.getName());
 
-		return contentFieldMapper.entityToDto(contentField);
+		ContentField field = contentFieldRepository.findAll(criteriaId.and(criteriaName)).stream().findFirst().orElse(null);
+
+		if (field == null) {
+			field = new ContentField();
+			contentFieldMapper.updateEntityFromVm(body, field);
+			field.setContent(contentRepository.getOne(idContent));
+			field = contentFieldRepository.save(field);
+
+			jdbcService.createTableField(content.getTableName(), field.getDbFieldName(), field.getDatabaseTypeWithLength(), field.isNullable());
+
+			return contentFieldMapper.entityToDto(field);
+		}
+
+		return null;
 	}
 }

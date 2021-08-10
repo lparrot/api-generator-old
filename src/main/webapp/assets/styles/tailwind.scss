@@ -1,13 +1,13 @@
 $colors: primary, secondary, success, info, warn, danger;
 
+@tailwind components;
+@tailwind base;
+@tailwind utilities;
+
 @import "components/animation";
 @import 'components/button';
 @import 'components/form';
 @import 'components/scrollbar';
-
-@tailwind components;
-@tailwind base;
-@tailwind utilities;
 
 html, body, #__nuxt, #__layout {
   @apply text-gray-700 text-sm h-full;

@@ -23,14 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootApplication
 public class ApiGeneratorApplication implements CommandLineRunner {
 
+	private static ConfigurableApplicationContext context;
 	@Autowired
 	private ContentRepository contentRepository;
 	@Autowired
 	private ContentService contentService;
 	@Autowired
 	private AuditEventRepository auditEventRepository;
-
-	private static ConfigurableApplicationContext context;
 
 	public static void main(String[] args) {
 		context = SpringApplication.run(ApiGeneratorApplication.class, args);
@@ -59,6 +58,12 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) {
+//		generateInitialData();
+
+		auditEventRepository.add(new AuditEvent(null, "APP_STARTED"));
+	}
+
+	private void generateInitialData() {
 		if (contentRepository.count() < 1) {
 			Content contentUser = Content.builder().name("User").build();
 			Content contentBlog = Content.builder().name("Blog").build();
@@ -88,8 +93,6 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 			contentService.createContent(contentBlog);
 			contentService.createContent(contentComment);
 		}
-
-		auditEventRepository.add(new AuditEvent(null, "APP_STARTED"));
 	}
 
 

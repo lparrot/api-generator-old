@@ -14,3 +14,7 @@
 .form-input {
   @apply h-10 px-2 border border-gray-300 rounded-lg focus:outline-none focus:border-secondary-500;
 }
+
+textarea {
+  @apply py-2
+}

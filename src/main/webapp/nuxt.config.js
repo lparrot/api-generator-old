@@ -7,9 +7,20 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
+  static: {
+    // Aucun préfixe ne sera rajouté au niveau du baseUrl pour les images par exemple
+    prefix: false,
+  },
+
+  generate: {
+    dir: '../../../target/dist',
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'API Generator',
+    titleTemplate: (titleChunk) => {
+      return titleChunk ? titleChunk + ' - API Generator' : 'API Generator'
+    },
 
     meta: [
       { charset: 'utf-8' },
@@ -20,6 +31,17 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
     ],
+  },
+
+  /*
+  ** Personnalisation de la barre de chargement
+  */
+  loading: false,
+
+  loadingIndicator: {
+    name: 'chasing-dots',
+    color: '#3B8070',
+    background: 'var(--light)',
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css

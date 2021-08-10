@@ -56,15 +56,13 @@ export default class DashboardJvm extends Vue {
             intersect: false,
           },
           scales: {
-            ticks: {
+            yAxes: {
               beginAtZero: true,
-            },
-            y: {
               grid: {
                 display: false,
               },
             },
-            x: {
+            xAxes: {
               display: false,
               grid: {
                 display: false,

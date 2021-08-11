@@ -59,7 +59,7 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) {
-		generateInitialData();
+//		generateInitialData();
 
 		auditEventRepository.add(new AuditEvent(null, "APP_STARTED"));
 	}

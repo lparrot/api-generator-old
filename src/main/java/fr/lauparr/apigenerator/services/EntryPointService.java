@@ -2,14 +2,18 @@ package fr.lauparr.apigenerator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.lauparr.apigenerator.entities.Content;
+import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import fr.lauparr.apigenerator.exceptions.DataNotFoundException;
 import fr.lauparr.apigenerator.pojo.dto.PaginationDTO;
+import fr.lauparr.apigenerator.pojo.dto.RelationDTO;
 import fr.lauparr.apigenerator.repositories.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EntryPointService {
@@ -21,7 +25,18 @@ public class EntryPointService {
 
 	public PaginationDTO getData(String slug, Pageable page) {
 		Content content = getContentBySlug(slug);
-		return jdbcService.findData(content.getTableName(), content.getFieldNames(), page);
+		List<RelationDTO> relations = content.getContentFields().stream()
+			.filter(field -> field.getType().equals(EnumContentFieldType.RELATION))
+			.filter(field -> field.getParams() != null)
+			.filter(field -> field.getParams().has("targetContent"))
+			.filter(field -> field.getParams().has("targetField"))
+			.map(field -> RelationDTO.builder()
+				.field(field.getDbFieldName())
+				.targetedTable(field.getParams().get("targetContent").asText())
+				.fieldNames(new String[]{field.getParams().get("targetField").asText()})
+				.build())
+			.collect(Collectors.toList());
+		return jdbcService.findData(content.getTableName(), content.getFieldNames(), page, relations);
 	}
 
 	public Object getDataById(String slug, String id) {

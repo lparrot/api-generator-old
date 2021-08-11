@@ -93,8 +93,6 @@
         </div>
       </form>
 
-      {{ fieldEdit }}
-
       <template v-if="fieldEdit != null" #footer="{hide}">
         <button class="p-btn--danger" type="button" @click="hide">Close</button>
         <button class="p-btn--success" form="formEditField" type="submit">Save</button>

@@ -3,6 +3,7 @@ package fr.lauparr.apigenerator.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.github.slugify.Slugify;
+import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +50,10 @@ public class Content {
 
 	public String[] getFieldNames() {
 		return this.contentFields.stream().map(ContentField::getDbFieldName).toArray(String[]::new);
+	}
+
+	public String[] getFieldNamesWithoutRelation() {
+		return this.contentFields.stream().filter(contentField -> !contentField.getType().equals(EnumContentFieldType.RELATION)).map(ContentField::getDbFieldName).toArray(String[]::new);
 	}
 
 	public String[] getFieldNamesWithoutPrimaryKey() {

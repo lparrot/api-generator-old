@@ -46,9 +46,11 @@ export default class PageContentIndex extends Vue {
   }
 
   get fieldForDatatable () {
-    return this.content.contentFields.filter(field => !field.hideInList).map(field => {
-      return { key: field.dbFieldName, label: field.name }
-    })
+    return this.content.contentFields
+      .filter(field => !field.hideInList)
+      .map(field => {
+        return { key: field.dbFieldName, label: field.name }
+      })
   }
 
   async fetch () {

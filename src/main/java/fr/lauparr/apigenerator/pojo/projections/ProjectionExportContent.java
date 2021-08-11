@@ -1,5 +1,6 @@
 package fr.lauparr.apigenerator.pojo.projections;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -20,5 +21,7 @@ public interface ProjectionExportContent {
 		boolean isHideInList();
 
 		boolean isPrimaryKey();
+
+		ObjectNode getParams();
 	}
 }

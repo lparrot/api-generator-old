@@ -81,6 +81,7 @@ public class ExportImportService {
 					.type(contentFieldDto.getType())
 					.nullable(contentFieldDto.isNullable())
 					.hideInList(contentFieldDto.isHideInList())
+					.params(contentFieldDto.getParams())
 					.build());
 			});
 		});

@@ -3,9 +3,12 @@ package fr.lauparr.apigenerator.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.lauparr.apigenerator.entities.Content;
 import fr.lauparr.apigenerator.entities.ContentField;
 import fr.lauparr.apigenerator.pojo.dto.PaginationDTO;
+import fr.lauparr.apigenerator.pojo.dto.RelationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,12 +20,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static fr.lauparr.apigenerator.utils.StringUtils.toSnakeCase;
 
@@ -97,10 +101,10 @@ public class JdbcService {
 	}
 
 	@Transactional(readOnly = true)
-	public PaginationDTO findData(String tableName, String[] fieldNames, Pageable pageable) {
+	public PaginationDTO findData(String tableName, String[] fieldNames, Pageable pageable, final List<RelationDTO> relations) {
 		StringBuilder pageQuery = new StringBuilder();
 
-		// Création de la pagination
+		// Pagination
 		if (pageable.getSort().isSorted()) {
 			Sort.Order order = pageable.getSort().toList().get(0);
 			pageQuery.append(String.format(" order by %s %s", order.getProperty(), order.getDirection()));
@@ -109,6 +113,7 @@ public class JdbcService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		pageQuery.append(String.format(" limit %s offset %s", pageable.getPageSize(), page * pageable.getPageSize()));
 
+		// Query
 		List<Object> objects = jdbcTemplate
 			.queryForList(String.format("select %s from %s %s", String.join(",", fieldNames), tableName, pageQuery))
 			.stream().map(map -> objectMapper.convertValue(map, Object.class))
@@ -116,8 +121,26 @@ public class JdbcService {
 
 		Integer total = jdbcTemplate.queryForObject(String.format("select count(*) from %s", tableName), Integer.class);
 
+		List<ObjectNode> nodes = objects.stream()
+			.map(data -> objectMapper.convertValue(data, ObjectNode.class))
+			.peek(node -> {
+				relations.forEach(relation -> {
+					Object data;
+					try {
+						data = jdbcTemplate.queryForObject(String.format("select * from %s where id = ?", relation.getTargetedTable()), getObjectRowMapper(), node.get(relation.getField()));
+					} catch (Exception e) {
+						data = null;
+					}
+
+					if (data != null) {
+						node.set(relation.getField(), JsonNodeFactory.instance.pojoNode(data));
+					}
+				});
+			})
+			.collect(Collectors.toList());
+
 		return PaginationDTO.builder()
-			.list(objects)
+			.list(objectMapper.convertValue(nodes, new TypeReference<List<Object>>() {}))
 			.page(pageable.getPageNumber())
 			.size(pageable.getPageSize())
 			.total(total)
@@ -134,19 +157,30 @@ public class JdbcService {
 
 	@Transactional(readOnly = true)
 	public Object findDataById(String tableName, String[] fieldNames, Object id) {
-		RowMapper<Object> rowMapper = (resultSet, i) -> {
-			Map<String, Object> map = new HashMap<>();
-			for (String fieldName : fieldNames) {
-				map.put(fieldName, resultSet.getObject(fieldName));
-			}
-			return objectMapper.convertValue(map, Object.class);
-		};
+		RowMapper<Object> rowMapper = getObjectRowMapper();
 
 		try {
 			return jdbcTemplate.queryForObject(String.format("select %s from %s where id = ?", String.join(",", fieldNames), tableName), rowMapper, id);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
+	}
+
+	private RowMapper<Object> getObjectRowMapper() {
+		return (resultSet, i) -> {
+			ObjectNode node = JsonNodeFactory.instance.objectNode();
+			final ResultSetMetaData metaData = resultSet.getMetaData();
+			IntStream.range(0, i)
+				.forEach(index -> {
+					try {
+						node.set(metaData.getColumnName(index), JsonNodeFactory.instance.pojoNode(resultSet.getObject(index)));
+					} catch (Exception e) {
+						//
+					}
+				});
+
+			return objectMapper.convertValue(node, Object.class);
+		};
 	}
 
 	@Transactional
@@ -178,10 +212,14 @@ public class JdbcService {
 			map.put("id", id);
 		}
 
-		String parameters = Arrays.stream(fieldNames).map(fieldName -> "?").collect(Collectors.joining(","));
-		Object[] data = Arrays.stream(fieldNames).map(map::get).toArray(Object[]::new);
+		String parameters = IntStream.range(0, map.size())
+			.mapToObj(i -> "?")
+			.collect(Collectors.joining(","));
 
-		jdbcTemplate.update(String.format("insert into %s (%s) values (%s)", tableName, String.join(",", fieldNames), parameters), data);
+		jdbcTemplate.update(String.format("insert into %s (%s) values (%s)",
+				tableName,
+				String.join(",", map.keySet()), parameters),
+			map.values().toArray(new Object[]{}));
 
 		return findDataById(tableName, fieldNames, id);
 	}

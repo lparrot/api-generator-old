@@ -1,5 +1,6 @@
 package fr.lauparr.apigenerator.controllers;
 
+import fr.lauparr.apigenerator.enums.EnumContentFieldRelationType;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import fr.lauparr.apigenerator.services.ListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,13 @@ public class ListController {
 	private ListService listService;
 
 	@GetMapping("/field_types")
-	public List<EnumContentFieldType> getAllFieldTypes() {
+	public List<EnumContentFieldType> findAllFieldTypes() {
 		return this.listService.getAllFieldTypes();
+	}
+
+	@GetMapping("/field_relation_types")
+	public List<EnumContentFieldRelationType> findAllFieldRelationTypes() {
+		return this.listService.getAllFieldRelationTypes();
 	}
 
 }

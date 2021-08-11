@@ -1,5 +1,6 @@
 package fr.lauparr.apigenerator;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import fr.lauparr.apigenerator.entities.Content;
 import fr.lauparr.apigenerator.entities.ContentField;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
@@ -58,7 +59,7 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) {
-//		generateInitialData();
+		generateInitialData();
 
 		auditEventRepository.add(new AuditEvent(null, "APP_STARTED"));
 	}
@@ -81,7 +82,7 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 			contentBlog.addField(ContentField.builder().name("Content").contentType(EnumContentFieldType.RICHTEXT).build());
 			contentBlog.addField(ContentField.builder().name("Unique identifier").nullable(true).contentType(EnumContentFieldType.UID).build());
 			contentBlog.addField(ContentField.builder().name("Published Date").nullable(true).contentType(EnumContentFieldType.DATETIME).build());
-			contentBlog.addField(ContentField.builder().name("Author").contentType(EnumContentFieldType.RELATION).build());
+			contentBlog.addField(ContentField.builder().name("Author").contentType(EnumContentFieldType.RELATION).params(JsonNodeFactory.instance.objectNode().put("type", "MANYTOONE")).build());
 
 			contentComment.addField(ContentField.builder().name("Id").primaryKey(true).contentType(EnumContentFieldType.STRING).hideInList(true).build());
 			contentComment.addField(ContentField.builder().name("Content").contentType(EnumContentFieldType.TEXT).build());

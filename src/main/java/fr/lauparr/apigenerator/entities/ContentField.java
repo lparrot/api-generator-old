@@ -2,6 +2,7 @@ package fr.lauparr.apigenerator.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +40,9 @@ public class ContentField {
 	@Column(name = "hide_in_list")
 	private boolean hideInList;
 
+	@Column(name = "params")
+	private ObjectNode params;
+
 	@Enumerated(EnumType.STRING)
 	private EnumContentFieldType type;
 
@@ -47,11 +51,12 @@ public class ContentField {
 	private Content content;
 
 	@Builder
-	public ContentField(String name, boolean nullable, boolean primaryKey, boolean hideInList, EnumContentFieldType contentType, Content content) {
+	public ContentField(String name, boolean nullable, boolean primaryKey, boolean hideInList, ObjectNode params, EnumContentFieldType contentType, Content content) {
 		this.name = name;
 		this.nullable = nullable;
 		this.primaryKey = primaryKey;
 		this.hideInList = hideInList;
+		this.params = params;
 		this.type = contentType;
 		this.content = content;
 	}

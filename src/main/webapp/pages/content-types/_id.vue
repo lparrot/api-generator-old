@@ -33,10 +33,10 @@
               <td class="py-2 w-10">
                 <i :class="getIcon(field.type)"></i>
               </td>
-              <td>
+              <td class="w-72 whitespace-nowrap">
                 {{ field.name }}
               </td>
-              <td></td>
+              <td class="w-30">{{ field.type.code }}</td>
               <td class="w-20">
                 <i class="fas fa-pencil-alt p-2 rounded-full hover:bg-info-200 cursor-pointer" @click="editField(field)"></i>
                 <i class="fas fa-trash mx-1 p-2 rounded-full hover:bg-danger-200 cursor-pointer"></i>
@@ -69,6 +69,15 @@
               <template #content="{model}">{{ model && model.name }}</template>
             </dropdown>
           </fieldset>
+        </div>
+
+        <div v-if="fieldEdit.type">
+          <fieldset class="form-field flex items-center">
+            <component :is="paramsComponent" v-model="fieldEdit" :mode="modeField"></component>
+          </fieldset>
+        </div>
+
+        <div>
           <fieldset class="form-field flex items-center">
             <div class="grid grid-cols-1 gap-1">
               <label class="inline-flex items-center mt-3">
@@ -83,6 +92,8 @@
           </fieldset>
         </div>
       </form>
+
+      {{ fieldEdit }}
 
       <template v-if="fieldEdit != null" #footer="{hide}">
         <button class="p-btn--danger" type="button" @click="hide">Close</button>
@@ -108,11 +119,19 @@ export default class PageContentTypes extends Vue {
   @Ref('modalEditField') modalEditField: Modal
 
   @State(state => state.lists.fieldtypes) fieldTypes
-  @Action('lists/getFieldTypes') getFieldTypes
+  @Action('lists/findFieldTypes') getFieldTypes
   @Action('findContents') findContents
 
   content: any = { contentFields: [] }
   fieldEdit: any = null
+
+  get paramsComponent () {
+    if (this.fieldEdit.type != null) {
+      const type = typeof this.fieldEdit.type === 'string' ? this.fieldEdit.type : this.fieldEdit.type.code
+      return 'app-fields-params-' + type.toLowerCase()
+    }
+    return null
+  }
 
   get mode (): EditMode {
     return this.$route.params.id != null ? 'edit' : 'add'
@@ -150,7 +169,7 @@ export default class PageContentTypes extends Vue {
     this.fieldEdit.type = this.fieldEdit.type.code
 
     if (this.modeField === 'edit') {
-      field = await this.$axios.$put(`/contents/${ this.content.id }/fields/${ this.fieldEdit.id }`, this.$utils.pickAttributes(this.fieldEdit, [ 'name', 'type', 'hideInList', 'nullable' ]))
+      field = await this.$axios.$put(`/contents/${ this.content.id }/fields/${ this.fieldEdit.id }`, this.$utils.pickAttributes(this.fieldEdit, [ 'name', 'type', 'hideInList', 'nullable', 'params' ]))
       this.$set(this.content.contentFields, this.content.contentFields.findIndex(field => field.dbFieldName === this.fieldEdit.dbFieldName), field)
     } else {
       field = await this.$axios.$post(`/contents/${ this.content.id }/fields`, this.fieldEdit)

@@ -3,17 +3,17 @@
     <h3 class="app-title">Blank Page</h3>
 
     <div class="flex gap-2">
-      <button class="p-btn--success" @click="exportContent">Exporter</button>
+      <button class="p-btn--success" @click="exportContent">
+        <i class="fas fa-file-export"></i>
+        <span>Exporter</span>
+      </button>
 
       <upload v-model="selectedFile" #default="{showUpload, deleteFile}" @input="importContent">
         <div class="w-full flex flex-col gap-2">
-          <div class="items-center bg-grey-lighter-500 px-4 py-2 bg-white text-blue-500 rounded tracking-wide uppercase border border-blue-500 cursor-pointer hover:bg-blue-500 hover:text-white" @click="showUpload">
+          <button class="p-btn--success" type="button" @click="showUpload">
             <i class="fas fa-cloud-upload-alt"></i>
-            <span class="text-base leading-normal">Import json file</span>
-          </div>
-          <div v-if="selectedFile != null" class="flex gap-2 align-middle bg-grey-lighter px-4 py-2 bg-white text-blue rounded-lg tracking-wide uppercase border border-blue">
-            <div>{{ selectedFile.name }} {{ $utils.formatBytes(selectedFile.size) }}</div>
-          </div>
+            <span>Importer</span>
+          </button>
         </div>
       </upload>
     </div>

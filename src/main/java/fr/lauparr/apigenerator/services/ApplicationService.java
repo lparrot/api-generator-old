@@ -1,5 +1,6 @@
 package fr.lauparr.apigenerator.services;
 
+import fr.lauparr.apigenerator.pojo.dto.CpuUsageDTO;
 import fr.lauparr.apigenerator.pojo.dto.JvmInfoDTO;
 import fr.lauparr.apigenerator.pojo.dto.ThreadInfoDTO;
 import io.micrometer.core.instrument.Statistic;
@@ -20,34 +21,49 @@ public class ApplicationService {
 	private final List<ThreadInfoDTO> threads = new ArrayList<>();
 	@Getter
 	private final List<JvmInfoDTO> jvmInfos = new ArrayList<>();
+	@Getter
+	private final List<JvmInfoDTO> jvmNonHeapInfos = new ArrayList<>();
+	@Getter
+	private final List<CpuUsageDTO> cpuUsage = new ArrayList<>();
 
 	@Autowired
 	private MetricsEndpoint metricsEndpoint;
 
-	@Value("${info.admin.max-thread}")
-	private long adminMaxThread;
-	@Value("${info.admin.max-jvm-info}")
-	private long adminMaxJvmInfo;
+	@Value("${info.admin.max-chart-info}")
+	private long adminMaxChartInfo;
 
 	public void addThread() {
-		if (threads.size() >= adminMaxThread) {
-			this.threads.remove(0);
-		}
-		this.threads.add(new ThreadInfoDTO(
+		updateList(this.threads, new ThreadInfoDTO(
 			getValueFromMetric("jvm.threads.live", Statistic.VALUE, null),
 			getValueFromMetric("jvm.threads.daemon", Statistic.VALUE, null)
 		));
 	}
 
 	public void addJvmInfo() {
-		if (jvmInfos.size() >= adminMaxJvmInfo) {
-			this.jvmInfos.remove(0);
-		}
-		this.jvmInfos.add(new JvmInfoDTO(
+		updateList(this.jvmInfos, new JvmInfoDTO(
 			getValueFromMetric("jvm.memory.used", Statistic.VALUE, Collections.singletonList("area:heap")),
 			getValueFromMetric("jvm.memory.committed", Statistic.VALUE, Collections.singletonList("area:heap")),
 			getValueFromMetric("jvm.memory.max", Statistic.VALUE, Collections.singletonList("area:heap"))
 		));
+	}
+
+	public void addJvmNonHeapInfo() {
+		updateList(this.jvmNonHeapInfos, new JvmInfoDTO(
+			getValueFromMetric("jvm.memory.used", Statistic.VALUE, Collections.singletonList("area:nonheap")),
+			getValueFromMetric("jvm.memory.committed", Statistic.VALUE, Collections.singletonList("area:nonheap")),
+			getValueFromMetric("jvm.memory.max", Statistic.VALUE, Collections.singletonList("area:nonheap"))
+		));
+	}
+
+	public void addCpuUsage() {
+		updateList(this.cpuUsage, new CpuUsageDTO(getValueFromMetric("system.cpu.usage", Statistic.VALUE, null)));
+	}
+
+	private <T> void updateList(List<T> workingList, T data) {
+		if (workingList.size() >= adminMaxChartInfo) {
+			workingList.remove(0);
+		}
+		workingList.add(data);
 	}
 
 	private double getValueFromMetric(String metricName, Statistic statistic, List<String> tags) {

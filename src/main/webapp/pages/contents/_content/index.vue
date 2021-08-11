@@ -52,8 +52,15 @@ export default class PageContentIndex extends Vue {
   }
 
   async fetch () {
-    this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
-    await this.search()
+    try {
+      this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
+      await this.search()
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        return this.$nuxt.error({ statusCode: 404, path: '404', message: 'This page could not be found' })
+      }
+      throw err
+    }
   }
 
   async search () {

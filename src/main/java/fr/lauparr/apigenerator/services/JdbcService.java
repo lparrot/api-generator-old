@@ -7,14 +7,14 @@ import fr.lauparr.apigenerator.entities.Content;
 import fr.lauparr.apigenerator.entities.ContentField;
 import fr.lauparr.apigenerator.pojo.dto.PaginationDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,6 +37,7 @@ public class JdbcService {
 	@Autowired
 	private DataSource dataSource;
 
+	@Transactional
 	public void createTable(Content content) {
 		try {
 			String tableName = content.getTableName();
@@ -58,6 +59,7 @@ public class JdbcService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public boolean checkIfTableExists(String tableName) throws SQLException {
 		ResultSet resultSet;
 
@@ -69,26 +71,32 @@ public class JdbcService {
 		return resultSet.next();
 	}
 
+	@Transactional
 	public void createTableIfNotExists(String tableName, ContentField primaryKeyField) {
 		jdbcTemplate.update(String.format("create table if not exists %s (%s)", tableName, String.format("%s %s not null primary key", primaryKeyField.getDbFieldName(), primaryKeyField.getDatabaseTypeWithLength())));
 	}
 
+	@Transactional
 	public void updateTable(String oldTableName, String newTableName) {
 		jdbcTemplate.update(String.format("alter table %s rename to %s", oldTableName, newTableName));
 	}
 
+	@Transactional
 	public void deleteTable(String tableName) {
 		jdbcTemplate.update(String.format("drop table if exists %s", tableName));
 	}
 
+	@Transactional
 	public void createTableField(String tableName, String fieldName, String fieldType, boolean nullable) {
 		jdbcTemplate.update(String.format("alter table %s add %s %s %s", tableName, fieldName, fieldType, nullable ? "" : " not null"));
 	}
 
+	@Transactional
 	public void updateTableField(String tableName, String oldFieldName, String newFieldName, String fieldType, boolean nullable) {
 		jdbcTemplate.update(String.format("alter table %s change column %s %s %s %s", tableName, oldFieldName, newFieldName, fieldType, nullable ? "" : " not null"));
 	}
 
+	@Transactional(readOnly = true)
 	public PaginationDTO findData(String tableName, String[] fieldNames, Pageable pageable) {
 		StringBuilder pageQuery = new StringBuilder();
 
@@ -116,6 +124,7 @@ public class JdbcService {
 			.build();
 	}
 
+	@Transactional(readOnly = true)
 	public List<Object> findData(String tableName, String[] fieldNames) {
 		return jdbcTemplate
 			.queryForList(String.format("select %s from %s", String.join(",", fieldNames), tableName))
@@ -123,7 +132,8 @@ public class JdbcService {
 			.collect(Collectors.toList());
 	}
 
-	public Object findDataById(String tableName, String[] fieldNames, String id) {
+	@Transactional(readOnly = true)
+	public Object findDataById(String tableName, String[] fieldNames, Object id) {
 		RowMapper<Object> rowMapper = (resultSet, i) -> {
 			Map<String, Object> map = new HashMap<>();
 			for (String fieldName : fieldNames) {
@@ -132,9 +142,14 @@ public class JdbcService {
 			return objectMapper.convertValue(map, Object.class);
 		};
 
-		return jdbcTemplate.queryForObject(String.format("select %s from %s where id = ?", String.join(",", fieldNames), tableName), rowMapper, id);
+		try {
+			return jdbcTemplate.queryForObject(String.format("select %s from %s where id = ?", String.join(",", fieldNames), tableName), rowMapper, id);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
+	@Transactional
 	public Object updateDataById(String tableName, String[] fieldNames, String id, JsonNode body) {
 		List<String> conditions = new ArrayList<>();
 		List<Object> values = new ArrayList<>();
@@ -145,26 +160,33 @@ public class JdbcService {
 			conditions.add(fieldName + " = ?");
 			values.add(result.get(fieldName));
 		});
+
 		values.add(id);
+
 		jdbcTemplate.update(String.format("update %s set %s where id = ?", tableName, String.join(",", conditions)), values.toArray(new Object[0]));
 		return findDataById(tableName, fieldNames, id);
 	}
 
+	@Transactional
 	public Object createData(String tableName, String[] fieldNames, JsonNode body) {
-		String catalog;
-		try {
-			catalog = dataSource.getConnection().getCatalog();
-		} catch (SQLException e) {
-			throw new GenericJDBCException("Erreur lors de la récupération du schema de base de données", e);
-		}
-		SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withCatalogName(catalog).withTableName(tableName);
 		Map<String, Object> map = objectMapper.convertValue(body, new TypeReference<Map<String, Object>>() {});
-		String id = UUID.randomUUID().toString();
-		map.put("id", id);
-		simpleJdbcInsert.execute(map);
+
+		Object id = map.get("id");
+
+		if (id == null) {
+			id = UUID.randomUUID().toString();
+			map.put("id", id);
+		}
+
+		String parameters = Arrays.stream(fieldNames).map(fieldName -> "?").collect(Collectors.joining(","));
+		Object[] data = Arrays.stream(fieldNames).map(map::get).toArray(Object[]::new);
+
+		jdbcTemplate.update(String.format("insert into %s (%s) values (%s)", tableName, String.join(",", fieldNames), parameters), data);
+
 		return findDataById(tableName, fieldNames, id);
 	}
 
+	@Transactional
 	public boolean deleteDataById(String tableName, String id) {
 		int updateCount = jdbcTemplate.update(String.format("delete from %s where id = ?", tableName), id);
 		return updateCount > 0;

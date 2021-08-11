@@ -20,8 +20,10 @@ public class AdminMetricTimer implements Job {
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		applicationService.addCpuUsage();
 		applicationService.addThread();
 		applicationService.addJvmInfo();
+		applicationService.addJvmNonHeapInfo();
 		simpMessagingTemplate.convertAndSend("/topic/metrics", true);
 	}
 }

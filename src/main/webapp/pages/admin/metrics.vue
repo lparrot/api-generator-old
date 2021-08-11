@@ -86,7 +86,7 @@ export default class PageAdminMetrics extends Vue {
     if (this.selectedTags != null) {
       const tags = Object.keys(this.selectedTags)
         .filter(tag => this.selectedTags[tag] != null)
-        .map(tag => `${ tag }=${ this.selectedTags[tag] }`)
+        .map(tag => `tag=${ tag }:${ this.selectedTags[tag] }`)
         .join('&')
       const res_metric_tag_value = await this.$axios.$get(`/actuator/metrics/${ this.selectedName }?${ encodeURI(tags) }`)
       this.selectedTagValue = res_metric_tag_value.measurements

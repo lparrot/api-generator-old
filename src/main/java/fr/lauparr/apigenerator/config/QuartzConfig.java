@@ -7,6 +7,7 @@ import org.quartz.impl.triggers.CronTriggerImpl;
 import org.quartz.simpl.SimpleJobFactory;
 import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +22,12 @@ public class QuartzConfig {
 	@Autowired
 	private SchedulerFactoryBean schedulerFactoryBean;
 
+	@Value("${info.admin.refresh-time-seconds:15}")
+	private int adminRefreshTimeSeconds;
+
 	@PostConstruct
 	public void postContruct() {
-		addSchedule(AdminMetricTimer.class, SimpleScheduleBuilder.repeatSecondlyForever(15));
+		addSchedule(AdminMetricTimer.class, SimpleScheduleBuilder.repeatSecondlyForever(adminRefreshTimeSeconds));
 	}
 
 	@Bean

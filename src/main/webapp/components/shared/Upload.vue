@@ -50,7 +50,7 @@ export default class Upload extends Vue {
 
   @Ref('inputUpload') inputUpload: any
 
-  @VModel() model!: File[] | File
+  @VModel() model!: File[] & File
 
   handleShowUpload () {
     this.inputUpload.click()

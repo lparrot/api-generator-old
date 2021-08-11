@@ -101,8 +101,17 @@ export default class PageIndex extends Vue {
 
   async fetch () {
     this.content = await this.$axios.$get(`/contents/${ this.$route.params.content }`)
+
+    if (this.content == null) {
+      return this.$nuxt.error({ statusCode: 404, path: '404', message: 'This page could not be found' })
+    }
+
     if (this.mode === 'edit') {
       this.item = await this.$axios.$get(`/data/${ this.content.slug }/${ this.$route.params.id }`)
+
+      if (this.item == null) {
+        return this.$nuxt.error({ statusCode: 404, path: '404', message: 'This page could not be found' })
+      }
     }
   }
 

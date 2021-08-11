@@ -29,50 +29,83 @@
 
       <div class="dashboard-card">
         <h5 class="dashboard-card-title">Threads</h5>
-        <button class="p-btn--success w-full" @click="setThreads">Refresh</button>
-        <dashboard-thread/>
+        <dashboard-line :datasets="datasetThread" :items="threads" label-attribute="timestamp"/>
       </div>
 
       <div class="dashboard-card">
         <h5 class="dashboard-card-title">JVM</h5>
-        <button class="p-btn--success w-full" @click="setJvmInfos">Refresh</button>
-        <dashboard-jvm/>
+        <dashboard-line :datasets="datasetJvm" :items="jvmInfos" label-attribute="timestamp"/>
+      </div>
+
+      <div class="dashboard-card">
+        <h5 class="dashboard-card-title">JVM - Non Heap</h5>
+        <dashboard-line :datasets="datasetJvm" :items="jvmNonHeapInfos" label-attribute="timestamp"/>
+      </div>
+
+      <div class="dashboard-card">
+        <h5 class="dashboard-card-title">CPU Usage</h5>
+        <dashboard-line :datasets="datasetCpuUsage" :items="cpuUsage" :options="{ yAxes: { suggestedMax: 100 }}" label-attribute="timestamp"/>
       </div>
     </div>
   </section>
 </template>
 
 <script lang="ts">
-import { Action, Component, Vue } from 'nuxt-property-decorator'
-import { Chart } from 'chart.js'
-import DashboardThread from '~/components/app/DashboardThread.vue'
-import DashboardJvm from '~/components/app/DashboardJvm.vue'
+import { Action, Component, State, Vue } from 'nuxt-property-decorator'
+import DashboardLine from '~/components/shared/DashboardLine.vue'
 
 @Component({
   components: {
-    DashboardThread,
-    DashboardJvm,
+    DashboardLine,
   },
 })
 export default class PageAdminDashboard extends Vue {
 
+  @State(state => state.actuator.cpuUsage) cpuUsage
+  @State(state => state.actuator.threads) threads
+  @State(state => state.actuator.jvmInfos) jvmInfos
+  @State(state => state.actuator.jvmNonHeapInfos) jvmNonHeapInfos
+
+  @Action('actuator/setCpuUsage') setCpuUsage
   @Action('actuator/setThreads') setThreads
   @Action('actuator/setJvmInfos') setJvmInfos
+  @Action('actuator/setJvmNonHeapInfos') setJvmNonHeapInfos
+
+  datasetCpuUsage = [
+    { data: (item) => item.used, label: 'USED', color: '#717eec' },
+  ]
+
+  datasetThread = [
+    { data: (item) => item.deamon, label: 'WAITING', color: '#717eec' },
+    { data: (item) => item.live, label: 'LIVE', color: '#ffeb3b' },
+  ]
+
+  datasetJvm = [
+    { data: (item) => item.used / 1000000, label: 'USED (MB)', color: '#717eec' },
+    { data: (item) => item.size / 1000000, label: 'SIZE (MB)', color: '#ffeb3b' },
+  ]
 
   health = {}
-  chartThread: Chart = null
 
   async asyncData (ctx) {
     const res_health = await ctx.$axios.$get('/actuator/health')
+
+    await ctx.store.dispatch('actuator/setCpuUsage')
+    await ctx.store.dispatch('actuator/setThreads')
+    await ctx.store.dispatch('actuator/setJvmInfos')
+    await ctx.store.dispatch('actuator/setJvmNonHeapInfos')
+
     return {
       health: res_health,
     }
   }
 
-  fetch () {
+  async fetch () {
     this.$socket.client.subscribe('/topic/metrics', async (message) => {
+      await this.setCpuUsage()
       await this.setThreads()
       await this.setJvmInfos()
+      await this.setJvmNonHeapInfos()
     }, { id: 'sub-metrics' })
   }
 

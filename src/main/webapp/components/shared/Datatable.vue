@@ -23,7 +23,7 @@
                 <tr v-for="(item, itemIndex) in items" :key="itemIndex" :class="d_classes.bodyTr">
                   <td v-for="field in fields" :key="item + field.key" :class="[typeof d_classes.bodyTd === 'function' ? d_classes.bodyTd(item[field.key]) : d_classes.bodyTd, field.class]">
                     <slot :item="item" :name="`cell(${field.key})`" :value="item[field.key]">
-                      <span>{{ item[field.key] }}</span>
+                      <span>{{ $utils.get(item, field.key) }}</span>
                     </slot>
                   </td>
                 </tr>

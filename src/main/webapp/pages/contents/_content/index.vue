@@ -49,7 +49,14 @@ export default class PageContentIndex extends Vue {
     return this.content.contentFields
       .filter(field => !field.hideInList)
       .map(field => {
-        return { key: field.dbFieldName, label: field.name }
+        let key = null
+        if (field.params?.targetField != null) {
+          key = field.dbFieldName + '.' + field.params?.targetField
+        } else {
+          key = field.dbFieldName
+        }
+
+        return { key, label: field.name }
       })
   }
 

@@ -127,7 +127,7 @@ public class JdbcService {
 				relations.forEach(relation -> {
 					Object data;
 					try {
-						data = jdbcTemplate.queryForObject(String.format("select * from %s where id = ?", relation.getTargetedTable()), getObjectRowMapper(), node.get(relation.getField()));
+						data = jdbcTemplate.queryForObject(String.format("select * from %s where id = ?", relation.getTargetedTable()), getObjectRowMapper(), node.get(relation.getField()).asText());
 					} catch (Exception e) {
 						data = null;
 					}
@@ -170,7 +170,7 @@ public class JdbcService {
 		return (resultSet, i) -> {
 			ObjectNode node = JsonNodeFactory.instance.objectNode();
 			final ResultSetMetaData metaData = resultSet.getMetaData();
-			IntStream.range(0, i)
+			IntStream.range(0, metaData.getColumnCount())
 				.forEach(index -> {
 					try {
 						node.set(metaData.getColumnName(index), JsonNodeFactory.instance.pojoNode(resultSet.getObject(index)));

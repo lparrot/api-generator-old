@@ -1,5 +1,6 @@
 import { Context } from '@nuxt/types'
 import { Inject } from '@nuxt/types/app'
+import get from 'lodash.get';
 
 export default async (ctx: Context, inject: Inject) => {
   inject('utils', new Utils())
@@ -63,6 +64,10 @@ class Utils {
 
   hasSlot (instance, name = 'default') {
     return !!instance.$slots[name] || !!instance.$scopedSlots[name]
+  }
+
+  get (data: any, field: string) {
+    return get(data, field)
   }
 }
 

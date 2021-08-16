@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-gray-50">
+  <section class="bg-gray-50 h-full overflow-auto">
     <app-sidebar :contents="contents"/>
     <div class="ml-0 transition md:ml-60">
       <div class="p-4">

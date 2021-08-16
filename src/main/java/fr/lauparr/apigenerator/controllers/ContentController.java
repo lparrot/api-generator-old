@@ -1,5 +1,6 @@
 package fr.lauparr.apigenerator.controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import fr.lauparr.apigenerator.pojo.dto.ContentFieldSimpleDTO;
 import fr.lauparr.apigenerator.pojo.dto.ContentSimpleDTO;
 import fr.lauparr.apigenerator.pojo.vm.ContentFieldVM;
@@ -35,6 +36,11 @@ public class ContentController {
 	@PutMapping("/{id}")
 	public ContentSimpleDTO updateContent(@PathVariable Long id, @RequestBody ContentVM body) {
 		return this.contentService.updateContent(id, body);
+	}
+
+	@PutMapping("/{idContent}/show_fields")
+	public ContentSimpleDTO updateShowFields(@PathVariable Long idContent, @RequestBody ArrayNode body) {
+		return this.contentService.updateShowFields(idContent, body);
 	}
 
 	@DeleteMapping("/{id}")

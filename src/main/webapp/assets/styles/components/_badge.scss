@@ -1,0 +1,12 @@
+@import "utils";
+
+.p-badge {
+  @apply inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none  rounded-full;
+}
+
+@each $color in $colors {
+  .p-badge--#{$color} {
+    @extend .p-badge;
+    @apply text-#{$color}-100 bg-#{$color}-600;
+  }
+}

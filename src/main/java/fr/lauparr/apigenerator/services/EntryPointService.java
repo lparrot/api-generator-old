@@ -29,11 +29,9 @@ public class EntryPointService {
 			.filter(field -> field.getType().equals(EnumContentFieldType.RELATION))
 			.filter(field -> field.getParams() != null)
 			.filter(field -> field.getParams().has("targetContent"))
-			.filter(field -> field.getParams().has("targetField"))
 			.map(field -> RelationDTO.builder()
 				.field(field.getDbFieldName())
 				.targetedTable(field.getParams().get("targetContent").asText())
-				.fieldNames(new String[]{field.getParams().get("targetField").asText()})
 				.build())
 			.collect(Collectors.toList());
 		return jdbcService.findData(content.getTableName(), content.getFieldNames(), page, relations);

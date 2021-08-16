@@ -170,7 +170,7 @@ public class JdbcService {
 		return (resultSet, i) -> {
 			ObjectNode node = JsonNodeFactory.instance.objectNode();
 			final ResultSetMetaData metaData = resultSet.getMetaData();
-			IntStream.range(0, metaData.getColumnCount())
+			IntStream.range(1, metaData.getColumnCount() + 1)
 				.forEach(index -> {
 					try {
 						node.set(metaData.getColumnName(index), JsonNodeFactory.instance.pojoNode(resultSet.getObject(index)));

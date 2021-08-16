@@ -1,5 +1,6 @@
 package fr.lauparr.apigenerator.pojo.dto;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +12,6 @@ public class ContentSimpleDTO {
 	private Long id;
 	private String name;
 	private String slug;
+	private ArrayNode contentShowFields;
 	private List<ContentFieldSimpleDTO> contentFields;
 }

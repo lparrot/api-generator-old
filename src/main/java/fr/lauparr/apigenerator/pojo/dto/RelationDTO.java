@@ -10,5 +10,4 @@ import lombok.*;
 public class RelationDTO {
 	private String field;
 	private String targetedTable;
-	private String[] fieldNames;
 }

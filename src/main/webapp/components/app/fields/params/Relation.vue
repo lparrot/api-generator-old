@@ -1,5 +1,5 @@
 <template>
-  <section class="grid grid-cols-3 gap-2">
+  <section class="grid grid-cols-2 gap-2">
     <fieldset class="form-field required">
       <label for="select-type">Relation type</label>
       <select id="select-type" v-model="field.params.type" class="form-input">
@@ -11,13 +11,6 @@
       <label for="select-targetcontent">Targeted content</label>
       <select id="select-targetcontent" v-model="field.params.targetContent" class="form-input">
         <option v-for="(content, contentIndex) in contents" :key="contentIndex" :value="content.slug">{{ content.name }}</option>
-      </select>
-    </fieldset>
-
-    <fieldset v-if="fieldList != null" class="form-field required">
-      <label for="select-fieldlist">Targeted field</label>
-      <select id="select-fieldlist" v-model="field.params.targetField" class="form-input">
-        <option v-for="(field, fieldIndex) in fieldList" :key="fieldIndex" :value="field.dbFieldName">{{ field.name }}</option>
       </select>
     </fieldset>
   </section>

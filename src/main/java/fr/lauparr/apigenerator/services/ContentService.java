@@ -1,5 +1,6 @@
 package fr.lauparr.apigenerator.services;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import fr.lauparr.apigenerator.entities.Content;
 import fr.lauparr.apigenerator.entities.ContentField;
 import fr.lauparr.apigenerator.entities.ContentField_;
@@ -140,5 +141,16 @@ public class ContentService {
 		}
 
 		return null;
+	}
+
+	@Transactional
+	public ContentSimpleDTO updateShowFields(Long idContent, ArrayNode body) {
+		Content content = contentRepository.findById(idContent).orElseThrow(DataNotFoundException::new);
+
+		content.setContentShowFields(body);
+
+		content = contentRepository.save(content);
+
+		return contentMapper.entityToDto(content);
 	}
 }

@@ -2,6 +2,7 @@ package fr.lauparr.apigenerator.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.slugify.Slugify;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import lombok.Builder;
@@ -33,6 +34,9 @@ public class Content {
 
 	@Column(name = "slug")
 	private String slug;
+
+	@Column(name = "content_show_fields")
+	private ArrayNode contentShowFields;
 
 	@OrderBy("name")
 	@OneToMany(mappedBy = "content", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = true)

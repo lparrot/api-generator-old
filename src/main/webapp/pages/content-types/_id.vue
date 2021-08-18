@@ -1,21 +1,25 @@
 <template>
   <div>
-    <h3 class="text-gray-700 text-3xl font-medium">{{ mode === 'add' ? 'Add new' : 'Edit ' + content.name }} structure</h3>
+    <h3 class="app-title">{{ mode === 'add' ? 'Add new' : 'Edit ' + content.name }} structure</h3>
 
-    <form @submit.prevent="submit">
-      <fieldset class="form-field required">
-        <label for="input-name">Name</label>
-        <input id="input-name" v-model="content.name" class="form-input" name="name" required>
-      </fieldset>
+    <fieldset>
+      <legend class="text-base font-medium text-gray-900 mb-2">Base configuration</legend>
 
-      <button class="p-btn--success" type="submit">Save data</button>
-    </form>
+      <form @submit.prevent="submit">
+        <fieldset class="form-field required">
+          <label for="input-name">Name</label>
+          <input id="input-name" v-model="content.name" class="form-input" name="name" required>
+        </fieldset>
+
+        <button class="p-btn--success" type="submit">Save data</button>
+      </form>
+    </fieldset>
+
+    <div class="py-3">
+      <hr>
+    </div>
 
     <template v-if="mode === 'edit'">
-      <div class="py-3">
-        <hr>
-      </div>
-
       <fieldset>
         <legend class="text-base font-medium text-gray-900 mb-2">Fields</legend>
 
@@ -33,10 +37,10 @@
               <td class="py-2 w-10">
                 <i :class="getIcon(field.type)"></i>
               </td>
-              <td class="w-72 whitespace-nowrap">
+              <td class="lg:w-72 whitespace-nowrap">
                 {{ field.name }}
               </td>
-              <td class="w-30">{{ field.type.code }}</td>
+              <td class="lg:w-30">{{ field.type.code }}</td>
               <td class="w-20">
                 <i class="fas fa-pencil-alt p-2 rounded-full hover:bg-info-200 cursor-pointer" @click="editField(field)"></i>
                 <i class="fas fa-trash mx-1 p-2 rounded-full hover:bg-danger-200 cursor-pointer"></i>
@@ -46,6 +50,34 @@
         </table>
 
         <button class="p-btn--success w-full mt-5" type="button" @click="addField">Add another field</button>
+      </fieldset>
+
+      <div class="py-3">
+        <hr>
+      </div>
+
+      <fieldset class="lg:px-2">
+        <legend class="text-base font-medium text-gray-900 mb-2">Field to show in list mode</legend>
+
+        <div class="py-2">
+          <button class="p-btn--success" @click="addShowField">Add field</button>
+        </div>
+
+        <div v-for="(field, fieldIndex) in content.contentShowFields" :key="fieldIndex" class="grid grid-cols-2 gap-2">
+          <fieldset class="form-field required">
+            <input v-model="field.label" class="form-input" @blur="onContentShowFieldsChange">
+          </fieldset>
+
+          <div class="flex items-center gap-2">
+            <fieldset class="form-field required w-full">
+              <input v-model="field.key" class="form-input" @blur="onContentShowFieldsChange">
+            </fieldset>
+
+            <button class="p-btn--danger" @click="deleteShowField(fieldIndex)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
       </fieldset>
     </template>
 
@@ -72,9 +104,7 @@
         </div>
 
         <div v-if="fieldEdit.type">
-          <fieldset class="form-field flex items-center">
-            <component :is="paramsComponent" v-model="fieldEdit" :mode="modeField"></component>
-          </fieldset>
+          <component :is="paramsComponent" v-model="fieldEdit" :mode="modeField"></component>
         </div>
 
         <div>
@@ -189,6 +219,23 @@ export default class PageContentTypes extends Vue {
     this.fieldEdit = { ...field }
     await this.getFieldTypes()
     this.modalEditField.show()
+  }
+
+  addShowField () {
+    if (this.content.contentShowFields != null) {
+      this.content.contentShowFields.push({ label: null, key: null })
+    } else {
+      this.$set(this.content, 'contentShowFields', [ { label: null, key: null } ])
+    }
+  }
+
+  async deleteShowField (index) {
+    this.$delete(this.content.contentShowFields, index)
+    await this.onContentShowFieldsChange()
+  }
+
+  async onContentShowFieldsChange () {
+    await this.$axios.$put(`/contents/${ this.content.id }/show_fields`, this.content.contentShowFields)
   }
 
   getIcon (type) {

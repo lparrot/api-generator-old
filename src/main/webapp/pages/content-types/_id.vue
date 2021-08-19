@@ -63,9 +63,15 @@
           <button class="p-btn--success" @click="addShowField">Add field</button>
         </div>
 
-        <div v-for="(field, fieldIndex) in content.contentShowFields" :key="fieldIndex" class="grid grid-cols-2 gap-2">
+        <div v-for="(field, fieldIndex) in content.contentShowFields" :key="fieldIndex" class="grid grid-cols-3 gap-2">
           <fieldset class="form-field required">
             <input v-model="field.label" class="form-input" @blur="onContentShowFieldsChange">
+          </fieldset>
+
+          <fieldset class="form-field required">
+            <select v-model="field.type" class="form-input" @change="onContentShowFieldsChange">
+              <option v-for="(fieldShowType, fieldShowTypeIndex) in fieldShowTypes" :key="fieldShowTypeIndex" :value="fieldShowType.code">{{ fieldShowType.label }}</option>
+            </select>
           </fieldset>
 
           <div class="flex items-center gap-2">
@@ -147,7 +153,9 @@ export default class PageContentTypes extends Vue {
   @Ref('modalEditField') modalEditField: Modal
 
   @State(state => state.lists.fieldtypes) fieldTypes
+  @State(state => state.lists.fieldShowTypes) fieldShowTypes
   @Action('lists/findFieldTypes') getFieldTypes
+  @Action('lists/findFieldShowTypes') getFieldShowTypes
   @Action('findContents') findContents
 
   content: any = { contentFields: [] }
@@ -177,6 +185,7 @@ export default class PageContentTypes extends Vue {
     if (this.mode === 'edit') {
       this.content = await this.$axios.$get(`/contents/${ this.$route.params.id }`)
     }
+    await this.getFieldShowTypes()
   }
 
   async submit () {

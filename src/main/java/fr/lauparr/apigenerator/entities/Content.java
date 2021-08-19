@@ -35,7 +35,7 @@ public class Content {
 	@Column(name = "slug")
 	private String slug;
 
-	@Column(name = "content_show_fields")
+	@Column(name = "content_show_fields", columnDefinition = "TEXT")
 	private ArrayNode contentShowFields;
 
 	@OrderBy("name")

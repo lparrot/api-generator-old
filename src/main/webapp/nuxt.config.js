@@ -58,6 +58,7 @@ export default {
     '@/plugins/date-fns',
     '@/plugins/chartjs',
     '@/plugins/websocket',
+    '@/plugins/explang',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

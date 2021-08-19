@@ -9,6 +9,11 @@
     </div>
 
     <datatable :fields="fieldForDatatable" :items="list" :pagination.sync="pagination" with-actions @context-changed="onDatatableContextChanged">
+      <template v-for="(field, fieldIndex) in fieldForDatatable" v-slot:[getCellSlot(field.key)]="{item}">
+        <span v-if="field.type === 'PROPERTY'" :key="fieldIndex">{{ $utils.get(item, field.key) }}</span>
+        <span v-else-if="field.type === 'EXPRESSION'" :key="fieldIndex">{{ $expLang.convert(item, field.key) }}</span>
+      </template>
+
       <template #cell(actions)="{item}">
         <div class="flex">
           <router-link :to="`/contents/${content.id}/edit/${item.id}`" class="p-btn--primary block rounded-full px-2 py-1.5 mx-1">
@@ -50,8 +55,7 @@ export default class PageContentIndex extends Vue {
       return this.content.contentShowFields
     }
 
-    return this.content.contentFields
-      .filter(field => !field.hideInList)
+    return this.fields
       .map(field => {
         return { key: field.dbFieldName, label: field.name }
       })
@@ -67,6 +71,10 @@ export default class PageContentIndex extends Vue {
       }
       throw err
     }
+  }
+
+  getCellSlot (key) {
+    return `cell(${ key })`
   }
 
   async search () {

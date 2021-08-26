@@ -100,6 +100,11 @@ public class JdbcService {
 		jdbcTemplate.update(String.format("alter table %s change column %s %s %s %s", tableName, oldFieldName, newFieldName, fieldType, nullable ? "" : " not null"));
 	}
 
+	@Transactional
+	public void deleteTableField(String tableName, String fieldName) {
+		jdbcTemplate.update(String.format("alter table %s drop column %s", tableName, fieldName));
+	}
+
 	@Transactional(readOnly = true)
 	public PaginationDTO findData(String tableName, String[] fieldNames, Pageable pageable, final List<RelationDTO> relations) {
 		StringBuilder pageQuery = new StringBuilder();

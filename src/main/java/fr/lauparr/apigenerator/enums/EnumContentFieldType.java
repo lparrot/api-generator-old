@@ -11,7 +11,7 @@ public enum EnumContentFieldType {
 	UID("Uid", "varchar", "255"),
 	NUMBER("Number", "int", "11"),
 	DATE("Date", "date", null),
-	TIME("Time", "timestamp", null),
+	TIME("Time", "time", null),
 	DATETIME("Date/Time", "datetime", null),
 	RELATION("Relation", "varchar", "255");
 

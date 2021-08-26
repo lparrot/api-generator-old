@@ -144,6 +144,15 @@ public class ContentService {
 	}
 
 	@Transactional
+	public void deleteField(Long idField) {
+		ContentField contentField = contentFieldRepository.findById(idField).orElseThrow(DataNotFoundException::new);
+
+		jdbcService.deleteTableField(contentField.getContent().getTableName(), contentField.getDbFieldName());
+
+		contentFieldRepository.deleteById(contentField.getId());
+	}
+
+	@Transactional
 	public ContentSimpleDTO updateShowFields(Long idContent, ArrayNode body) {
 		Content content = contentRepository.findById(idContent).orElseThrow(DataNotFoundException::new);
 

@@ -73,7 +73,7 @@ public class ExportImportService {
 		List<ContentSimpleDTO> structure = objectMapper.convertValue(node.path("structure"), new TypeReference<List<ContentSimpleDTO>>() {});
 
 		structure.forEach(contentDto -> {
-			ContentSimpleDTO content = contentService.createContent(ContentVM.builder().name(contentDto.getName()).build());
+			ContentSimpleDTO content = contentService.createContent(ContentVM.builder().name(contentDto.getName()).contentShowFields(contentDto.getContentShowFields()).build());
 
 			contentDto.getContentFields().forEach(contentFieldDto -> {
 				contentService.addField(content.getId(), ContentFieldVM.builder()

@@ -48,14 +48,19 @@ public class ContentController {
 		this.contentService.deleteContent(id);
 	}
 
-	@PostMapping("/{id}/fields")
-	public ContentFieldSimpleDTO addField(@PathVariable Long id, @RequestBody ContentFieldVM body) {
-		return this.contentService.addField(id, body);
+	@PostMapping("/{idContent}/fields")
+	public ContentFieldSimpleDTO addField(@PathVariable Long idContent, @RequestBody ContentFieldVM body) {
+		return this.contentService.addField(idContent, body);
 	}
 
 	@PutMapping("/{idContent}/fields/{idField}")
 	public ContentFieldSimpleDTO updateField(@PathVariable Long idContent, @PathVariable Long idField, @RequestBody ContentFieldVM body) {
 		return this.contentService.updateField(idContent, idField, body);
+	}
+
+	@DeleteMapping("/fields/{idField}")
+	public void deleteField(@PathVariable Long idField) {
+		this.contentService.deleteField(idField);
 	}
 
 }

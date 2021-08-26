@@ -11,11 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ContentVM {
 	private String name;
+	private String displayedField;
 	private ArrayNode contentShowFields;
 
 	@Builder
-	public ContentVM(String name, ArrayNode contentShowFields) {
+	public ContentVM(String name, String displayedField, ArrayNode contentShowFields) {
 		this.name = name;
+		this.displayedField = displayedField;
 		this.contentShowFields = contentShowFields;
 	}
 }

@@ -12,6 +12,7 @@ public class ContentSimpleDTO {
 	private Long id;
 	private String name;
 	private String slug;
+	private String displayedField;
 	private ArrayNode contentShowFields;
 	private List<ContentFieldSimpleDTO> contentFields;
 }

@@ -35,11 +35,14 @@ public class Content {
 	@Column(name = "slug")
 	private String slug;
 
+	@Column(name = "displayed_field")
+	private String displayedField;
+
 	@Column(name = "content_show_fields", columnDefinition = "TEXT")
 	private ArrayNode contentShowFields;
 
-	@OrderBy("name")
-	@OneToMany(mappedBy = "content", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = true)
+	@OrderBy("id")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "content", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = true)
 	private List<ContentField> contentFields = new ArrayList<>();
 
 	@Builder

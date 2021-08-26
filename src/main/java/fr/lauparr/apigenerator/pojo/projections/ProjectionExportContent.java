@@ -21,8 +21,6 @@ public interface ProjectionExportContent {
 
 		boolean isNullable();
 
-		boolean isHideInList();
-
 		boolean isPrimaryKey();
 
 		ObjectNode getParams();

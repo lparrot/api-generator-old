@@ -80,7 +80,6 @@ public class ExportImportService {
 					.name(contentFieldDto.getName())
 					.type(contentFieldDto.getType())
 					.nullable(contentFieldDto.isNullable())
-					.hideInList(contentFieldDto.isHideInList())
 					.params(contentFieldDto.getParams())
 					.build());
 			});

@@ -70,13 +70,13 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 			Content contentBlog = Content.builder().name("Blog").build();
 			Content contentComment = Content.builder().name("Comment").build();
 
-			contentUser.addField(ContentField.builder().name("Id").primaryKey(true).contentType(EnumContentFieldType.STRING).hideInList(true).build());
+			contentUser.addField(ContentField.builder().name("Id").primaryKey(true).contentType(EnumContentFieldType.STRING).build());
 			contentUser.addField(ContentField.builder().name("Username").contentType(EnumContentFieldType.STRING).build());
 			contentUser.addField(ContentField.builder().name("Lastname").contentType(EnumContentFieldType.STRING).build());
 			contentUser.addField(ContentField.builder().name("Firstname").contentType(EnumContentFieldType.STRING).build());
 			contentUser.addField(ContentField.builder().name("Birthday").nullable(true).contentType(EnumContentFieldType.DATE).build());
 
-			contentBlog.addField(ContentField.builder().name("Id").primaryKey(true).contentType(EnumContentFieldType.STRING).hideInList(true).build());
+			contentBlog.addField(ContentField.builder().name("Id").primaryKey(true).contentType(EnumContentFieldType.STRING).build());
 			contentBlog.addField(ContentField.builder().name("Name").contentType(EnumContentFieldType.STRING).build());
 			contentBlog.addField(ContentField.builder().name("Description").nullable(true).contentType(EnumContentFieldType.TEXT).build());
 			contentBlog.addField(ContentField.builder().name("Content").contentType(EnumContentFieldType.RICHTEXT).build());
@@ -84,7 +84,7 @@ public class ApiGeneratorApplication implements CommandLineRunner {
 			contentBlog.addField(ContentField.builder().name("Published Date").nullable(true).contentType(EnumContentFieldType.DATETIME).build());
 			contentBlog.addField(ContentField.builder().name("Author").contentType(EnumContentFieldType.RELATION).params(JsonNodeFactory.instance.objectNode().put("type", "MANYTOONE")).build());
 
-			contentComment.addField(ContentField.builder().name("Id").primaryKey(true).contentType(EnumContentFieldType.STRING).hideInList(true).build());
+			contentComment.addField(ContentField.builder().name("Id").primaryKey(true).contentType(EnumContentFieldType.STRING).build());
 			contentComment.addField(ContentField.builder().name("Content").contentType(EnumContentFieldType.TEXT).build());
 			contentComment.addField(ContentField.builder().name("Created Date").contentType(EnumContentFieldType.DATETIME).build());
 			contentComment.addField(ContentField.builder().name("Author").contentType(EnumContentFieldType.RELATION).build());

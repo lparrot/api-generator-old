@@ -66,7 +66,7 @@ public class ContentService {
 		}
 
 		if (Arrays.stream(content.getFieldNames()).noneMatch("id"::equals)) {
-			content.addField(ContentField.builder().name("Id").nullable(false).primaryKey(true).hideInList(true).contentType(EnumContentFieldType.STRING).build());
+			content.addField(ContentField.builder().name("Id").nullable(false).primaryKey(true).contentType(EnumContentFieldType.STRING).build());
 		}
 
 		content = contentRepository.save(content);
@@ -113,6 +113,19 @@ public class ContentService {
 		}
 
 		contentFieldMapper.updateEntityFromVm(body, contentField);
+
+		if (EnumContentFieldType.RELATION.equals(body.getType())) {
+			Content targetedContent = contentRepository.findById(body.getRelationContentId()).orElse(null);
+
+			if (targetedContent != null) {
+				contentField.setRelationContent(targetedContent);
+				contentField.setRelationType(body.getRelationType());
+			}
+		} else {
+			contentField.setRelationContent(null);
+			contentField.setRelationType(null);
+		}
+
 		contentField = contentFieldRepository.save(contentField);
 
 		jdbcService.updateTableField(contentField.getContent().getTableName(), oldFieldname, contentField.getDbFieldName(), contentField.getDatabaseTypeWithLength(), contentField.isNullable());
@@ -133,6 +146,16 @@ public class ContentService {
 			field = new ContentField();
 			contentFieldMapper.updateEntityFromVm(body, field);
 			field.setContent(contentRepository.getOne(idContent));
+
+			if (EnumContentFieldType.RELATION.equals(body.getType())) {
+				Content targetedContent = contentRepository.findById(body.getRelationContentId()).orElse(null);
+
+				if (targetedContent != null) {
+					field.setRelationContent(targetedContent);
+					field.setRelationType(body.getRelationType());
+				}
+			}
+
 			field = contentFieldRepository.save(field);
 
 			jdbcService.createTableField(content.getTableName(), field.getDbFieldName(), field.getDatabaseTypeWithLength(), field.isNullable());

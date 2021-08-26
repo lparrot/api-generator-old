@@ -1,6 +1,7 @@
 package fr.lauparr.apigenerator.pojo.dto;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import fr.lauparr.apigenerator.enums.EnumContentFieldRelationType;
 import fr.lauparr.apigenerator.enums.EnumContentFieldType;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,9 @@ public class ContentFieldSimpleDTO {
 	private String dbFieldName;
 	private boolean nullable;
 	private boolean primaryKey;
-	private boolean hideInList;
 	private ObjectNode params;
 	private EnumContentFieldType type;
+
+	private EnumContentFieldRelationType relationType;
+	private ContentSimpleDTO relationContent;
 }
